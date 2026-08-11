@@ -16,8 +16,8 @@ A more detailed analysis of the DAX formulas, the dashboard purposes and the der
 <br>
 
 ## 📊 Key Deliverables & Artifacts
-* 📂 **Interactive Power BI report:** Download the interactive .pbix [report](./powerbi/RP_Telco_Churn_stored.pbix/) file to open and interact with the full dashboard in Power BI Desktop.
-* 📄 **Project Source Code:** View the .pbib [folder](./powerbi/RP_Telco_Churn_stored.pbip/) to inspect the underlying DAX measures, TMDL model definitions, and report metadata tracked via Git. 
+* 📂 **Interactive Power BI report:** Download the interactive .pbix [report](./report/Inventory_management.pbix) file to open and interact with the full dashboard in Power BI Desktop.
+* 📄 **Project Source Code:** View the .pbib [folder](./report/Inventory_management.pbip) to inspect the underlying DAX measures, TMDL model definitions, and report metadata tracked via Git. 
 
 ![Dashboard Preview](./assets/dashboard-demo.gif)
 
