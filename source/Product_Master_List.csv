@@ -1,0 +1,8 @@
+SKU,Description,Category,Supplier,Unit_Cost,Lead_Time_Days,Stock_Level,Reorder_Point,Total_Value
+LENS-D-01,Daily Contacts,Contact Lenses,ClearVision,12.5,14,450,500,5625
+LENS-M-02,Monthly Toric,Contact Lenses,ClearVision,25,21,120,150,3000
+FRM-M-10,Men's Aviator,Frames,OptiStyle,45,30,45,50,2025
+FRM-W-12,Women's Cat Eye,Frames,OptiStyle,48.5,30,180,50,8730
+SOL-S-01,Saline 300ml,Solutions,AquaDrop,4.25,7,800,400,3400
+SURG-L-01,Intraocular Lens,Surgical,MedEye Tech,150,45,15,20,2250
+SURG-P-02,Phaco Tip,Surgical,MedEye Tech,85,30,40,25,3400
