@@ -1,16 +1,17 @@
 # Inventory Management Healthcare
-**Source Data:** Kaggle [link](https://www.kaggle.com/datasets/abdallahwagih/telco-customer-churn) / Download Source Data [Inventory Transactions](https://github.com/emmacaire/Inventory-management-python/blob/main/source/Inventory_Transactions.csv) [Product Master List](https://github.com/emmacaire/Inventory-management-python/blob/main/source/Product_Master_List.csv)
+**Source Data:** Kaggle [link](https://www.kaggle.com/datasets/nevinfritsch/medical-supply-chain-and-inventory-risk-analysis) / Download Source Data [Inventory Transactions](https://github.com/emmacaire/Inventory-management-python/blob/main/source/Inventory_Transactions.csv) [Product Master List](https://github.com/emmacaire/Inventory-management-python/blob/main/source/Product_Master_List.csv)
 <br>
 <br>
 
 ## 📌 Summary
-....With this project I developed a realistic Business Intelligence workflow from enterprise data collection to the delivery of a Power BI report and data-driven future prescriptive actions. Data involved customer transactions as contract renewal, new contract or end of contract. In case of churn, additional data on the reason why the customer interrupted the contract was collected.
+The analysis focused on inventory data in a pharma company, offering a wide range of insights on inventory status, re-ordering practices, branch and staff performance, ABC stratification and pricing strategies. There were two main limitations of this dataset:
+  1. data included all outbound transactions of ordered material, but lacked inbound transactions, i.e. purchase orders made throughout the year to replenish stock. Basically it only includes what leaves the warehouse (sales) without registering what enters the warehouse (purchasing). For this reason, the analysis on the purchasing side was only static, focused on current stock, while for the sales side, it was possible to inspect the trend throughout the considered time period.
+  2.  there was no indication of the unit price for each item, only the unit cost. This meant that most of the analysis was focusing on revenue at cost of purchasing, while revenue on selling price was only studied as a simulation, analyzing the possible outcomes of different price markups.
 
-Python was used early in the project to manipulate the data and allow for a proper date dimension, other than for quick data cleaning and checks.
-Afterwards the manipulated source data was loaded in Fabric, first in a Staging Area, then in the proper Data Warehouse, after complying with quality checks performed in a pipeline through scripts and stored procedures. There was extensive use of dataflows and pipelines during these stages, other than the SQL scripts to load the final dimensional model.
-Once the clean data was loaded in the warehouse, a Snowflake schema was created in the semantic model and the most relevant insights were presented in a 5-dashboard report. 
+The analysis was conducted entirely on Power BI Desktop, with extensive use of Power Query for the ETL part and a simple relational model with one fact table and two dimension tables (product master list and date) in the semantic model. The main focus in this project was on the creation of complex DAX formulas that would support inventory management.
+The final output is a Power BI report consisting of 7 connected dashboards, including a Power Automate button to notify the required stock replenishment.
 
-A more detailed description of the project phases follows in the Project Details section.
+A more detailed analysis of the DAX formulas, the dashboard purposes and the derived insights is available below.
 <br>
 <br>
 
@@ -27,10 +28,11 @@ A more detailed description of the project phases follows in the Project Details
 
 * **Visualization tools:**  bar charts, donut charts, decomposition trees, multi-level cards, KPIs, slicers, interactive maps, scatter plots, navigation buttons, custom tooltips.
 <br>
-<img width="1452" height="816" alt="RP_pg1" src="https://github.com/user-attachments/assets/90af4680-2dc9-45d0-8d8d-7e967279232a" />
+<br>
+<img width="1417" height="795" alt="s02" src="https://github.com/user-attachments/assets/86c5ac8e-c4e1-4654-83e0-5e0631777a8a" />
 <br>
 <br>
-<img width="1455" height="820" alt="RP_pg4" src="https://github.com/user-attachments/assets/fba39242-e86a-444b-b8a6-ba7247f9de7b" />
+<img width="1420" height="797" alt="s06" src="https://github.com/user-attachments/assets/004eb43f-f6fe-4e22-90f6-2d8418a39aa6" />
 <br>
 <br>
 
@@ -211,17 +213,24 @@ On the basis of my limited knowledge of the market and the company, I list some 
 Full report preview:
 <br>
 <br>
-<img width="1452" height="816" alt="RP_pg1" src="https://github.com/user-attachments/assets/6ee70fec-c04c-4c7b-b2de-62c74e736246" />
+<img width="1421" height="797" alt="s01" src="https://github.com/user-attachments/assets/5a66e8a6-a10a-41f0-8885-192560923368" />
 <br>
 <br>
-<img width="1312" height="737" alt="RP_pg2" src="https://github.com/user-attachments/assets/d47466fd-6867-4eeb-98aa-db6b7d00454e" />
+<img width="1417" height="795" alt="s02" src="https://github.com/user-attachments/assets/a344dfc1-6d0c-45c2-8d7f-8de9ad8bcced" />
 <br>
 <br>
-<img width="1312" height="732" alt="RP_pg3" src="https://github.com/user-attachments/assets/e994492c-f91b-4367-85af-24a6db45f0f4" />
+<img width="1417" height="797" alt="s03" src="https://github.com/user-attachments/assets/1b93e3b7-a719-453f-923c-d449adb038d0" />
 <br>
 <br>
-<img width="1455" height="820" alt="RP_pg4" src="https://github.com/user-attachments/assets/e896e3fd-0e3e-41fa-aa09-bb1fd3d773ec" />
+<img width="1421" height="800" alt="s04" src="https://github.com/user-attachments/assets/9128179c-b5ee-40fa-84d1-6ebdb2be44ff" />
 <br>
 <br>
-<img width="1312" height="736" alt="RP_pg5" src="https://github.com/user-attachments/assets/0c8da78e-3cc8-4601-a989-620749cf0a41" />
+<img width="1421" height="797" alt="s05" src="https://github.com/user-attachments/assets/304506b9-d776-4003-8c6d-6c987b3c2b13" />
+<br>
+<br>
+<img width="1420" height="797" alt="s06" src="https://github.com/user-attachments/assets/e7ba3fdf-9c97-4bd6-b9c0-30eced4d38a9" />
+<br>
+<br>
+<img width="1417" height="797" alt="s07" src="https://github.com/user-attachments/assets/a29c7822-7339-41ea-9e86-2c3e6b301cc0" />
+
 
