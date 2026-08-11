@@ -1,5 +1,5 @@
 # Inventory Management Healthcare
-**Source Data:** Kaggle [link](https://www.kaggle.com/datasets/nevinfritsch/medical-supply-chain-and-inventory-risk-analysis) / Download Source Data [Inventory Transactions](https://github.com/emmacaire/Inventory-management-python/blob/main/source/Inventory_Transactions.csv) [Product Master List](https://github.com/emmacaire/Inventory-management-python/blob/main/source/Product_Master_List.csv)
+**Source Data:** Kaggle [link](https://www.kaggle.com/datasets/nevinfritsch/medical-supply-chain-and-inventory-risk-analysis) / Download source files [Inventory Transactions](https://github.com/emmacaire/Inventory-management-python/blob/main/source/Inventory_Transactions.csv) [Product Master List](https://github.com/emmacaire/Inventory-management-python/blob/main/source/Product_Master_List.csv)
 <br>
 <br>
 
@@ -23,10 +23,10 @@ A more detailed analysis of the DAX formulas, the dashboard purposes and the der
 
 ## 🛠️ Tech Stack & Methodology
 * **Softwares and platforms:**
-  - Power BI Desktop (semantic model, Snowflake schema, DAX, report),
-  - Power Automate (button to send an automated e-mail with an HTML table)
+  - Power BI Desktop (semantic model, star schema, DAX, report),
+  - Power Automate (button activating an automated e-mail with an HTML table)
 
-* **Visualization tools:**  bar charts, donut charts, decomposition trees, multi-level cards, KPIs, slicers, interactive maps, scatter plots, navigation buttons, custom tooltips.
+* **Visualization tools:**  KPIs, multi-level cards, bar charts, mixed bar/line charts, decomposition trees, matrixes, slicers, scatter plots, field parameters, navigation buttons, custom tooltips, Power Automate buttons.
 <br>
 <br>
 <img width="1417" height="795" alt="s02" src="https://github.com/user-attachments/assets/86c5ac8e-c4e1-4654-83e0-5e0631777a8a" />
@@ -39,147 +39,77 @@ A more detailed analysis of the DAX formulas, the dashboard purposes and the der
 ## 📋 Project Details
 <br>
 <br>
-<ins>Phase 1: Source Data selection</ins>
+<ins>Semantic model</ins>
 <br>
 <br>
-The Telco California Churn dataset is large enough in terms of rows (7000+) and offers a wide range of variables and categories that allow to build a solid dimensional model, including longitude and latitude to support map views. However, it presents a fundamental limitation, reporting only Q3 2025 transactions with no precise date. This would not allow the creation of a proper dimension date and I would miss several opportunities for analysis. For this reason, I opt for a quick manipulation in Python that generates an artificial date column.
+The model consists of a simple star schema where product and time dimension refer to the inventory transaction table through their respective foreign keys.
+Two hierarchies have been created, one in the product category and one drilling down from year to quarter and month.
 <br>
 <br>
-<img width="1286" height="246" alt="image" src="https://github.com/user-attachments/assets/05a4923b-0dc4-445c-a518-6162f79cc121" />
+<img width="1175" height="708" alt="Screenshot 2026-08-11 170854" src="https://github.com/user-attachments/assets/1f674f8e-bd7d-42dd-a113-175e8b696ffa" />
 <br>
 <br>
 <br>
-<ins>Phase 2: Source Data manipulation in Python</ins>
+<ins>DAX formulas</ins>
 <br>
 <br>
-In Python I create a column with randomly generated dates for the whole 2025 year. This will likely give very flat distributions, without significant peaks or patterns, but I am curious to confirm this intuition after the analysis.
-In addition I check for outliers, data entry errors (negative values or out of scale values), missing data, etc.
-The code to create random dates looks like this:
+xxx
 <br>
 <br>
-<img width="522" height="152" alt="ph2_python" src="https://github.com/user-attachments/assets/1c40bc5d-f0ca-409e-8ca5-b4661788f952" />
 <br>
+<ins>Dashboards</ins>
 <br>
 <br>
-<ins>Phase 3: Loading the Source Data in Fabric (Bronze Layer)</ins>
+The report consists of 7 dashboards. Buttons on the left allow to easily switch dashboard while consulting the report.
 <br>
-<br>
-Now that the source data has been improved, it is imported in Fabric as the Bronze layer in CSV format, and stored in a Lakehouse. From this one, I will use dataflows to transform the source table and load the dimension and fact tables.
-<br>
-<br>
-<br>
-<ins>Phase 4: Select the business questions and define the dimensional model </ins>
-<br>
-<br>
-Once the source data is available, the most important of all steps is to understand what do I need the data to tell me, and how I will get the information. This is the moment where I understand how much can be asked to this dataset. The date and geographical coordinates suggest that Date and Location dimensions would be very helpful to extract patterns in terms of time/space. In addition, each transaction is linked to a customer code, which will be crucial for profiling the type of user, adding a Customer dimension. In addition, two columns in hierarchical sequence define whether the user has internet and if so, what type it is. Thus I will add a Service category, while all the other binary variables on other types of service are not linked to each other in a hierarchical way, therefore they will left as attributes. Each transaction other than the customer status (stayed, churned, joined) also contains important measures: the tenure in month and the charge in USD are important metrics that relate to the customer status. The sort of questions that the model will allow to answer is this:
-- did the company have more customers joining or leaving?
-- how does geography affect churn and the related metrics?
-- is the churn rate changing throughout the year? (unlikely given that the column was generated artificially)
-- what motivation did the customer indicate as main reason for churning?
-- are demographic and product features distributed differently across customer that stayed, churned and joined?
-- is there a relationship between metrics, such as tenure in months and customer charge?
-<br>
-The defined model was a Snowflake schema where Fact Customer Transactions would link to Dimension Date and Dimension Customer, while Dimension Customer would further connect to Dimension Service and Dimension Location.
-<br>
-<br>
-<br>
-<ins>Phase 5: ETL in Fabric (Silver Layer)</ins>
-<br>
-<br>
-The defined dimensions and fact tables are created with an [SQL query](.sql/sql_load_staging_area.sql) and data is ingested there through [dataflows](.dataflows/Dataflows_Telco_Churn.txt).
-Dataflows commands include selecting the appropriate columns, generating new columns that build other categories on top of the existing ones, cleaning the dimension rows by removing duplicates, and ensuring that the primary and foreign keys are selected appropriately.
-Once all the dataflows are ready I create a pipeline that will load all the data from the in a Staging Area warehouse, where some quality checks will be performed before loading into the final data warehouse.
-<br>
-<br>
-<img width="1566" height="335" alt="PL_load_staging_area" src="https://github.com/user-attachments/assets/67ac9cd7-9145-4ed6-96ac-e5e11d178da3" />
-<br>
-<br>
-Another pipeline is created to perform quality checks including the integrity of the business key, the uniqueness of dimension attributes, no negative values in the charge column, and the prensence of the parent key for each child table referencing other foreign keys. Those checks are done through direct [scripts](.sql/sql_create_log_table_quality_checks.sql) in the pipeline or through [stored procedures](.sql/sql_stored_procedures_quality_checks.sql). 
-<br>
-<br>
-<img width="587" height="542" alt="PL_log_quality_checks" src="https://github.com/user-attachments/assets/5d16bdd1-6deb-4862-b070-c023454d67e4" />
-<br>
-<br>
-The results, after the pipeline is run, are visible in the quality checks table in the staging area warehouse.
-<br>
-<br>
-<img width="1237" height="257" alt="ETL_quality_checks" src="https://github.com/user-attachments/assets/f9d25646-03c2-43a8-8bde-e315ff4bb82e" />
-<br>
-<br>
-After having checked the data in the staging area, I can finally transfer my table content to the final Data Warehouse in the Gold Layer.
-<br>
-<br>
-<br>
-<ins>Phase 6: Loading the Data Warehouse in Fabric (Gold Layer)</ins>
-<br>
-<br>
-With another pipeline, I can now fill the Data Warehouse with the filtered and cleaned data from the Staging Area data warehouse. The key focus in the pipeline is on ensuring that each dimension table is loaded with an additional progressive surrogate key, other than the business key. It's the surrogate key that will reference the dimension as a foreign key in the fact table, instead of the business key.
-<br>
-<br>
-<img width="1497" height="411" alt="PL_load_data_warehouse" src="https://github.com/user-attachments/assets/44d6f33e-538b-46a2-bab9-1ac70d353b47" />
-<br>
-<br>
-<br>
-<ins>Phase 7: Creating the relational model in Power BI</ins>
-<br>
-<br>
-At this stage I create the semantic model in Power BI and link tables with appropriate relationships. I additionally perform some changes that will help during the creation of the report:
-* set Dimension Date as the Date reference table,
-* create the date hierarchy,
-* order the text version of the Weekday and Month by the corresponding numeric column, for them to be displayed in logical order, rather than in alphabetical one.
-* rename fields so they look more synthetic and visually appealing on the dashboards,
-* hide fields of surrogate and business keys, since they will not be used in the visuals.
-<br>
-<br>
-<img width="1037" height="512" alt="image" src="https://github.com/user-attachments/assets/c742d2ce-e7f6-4259-9a3d-f6ecaaf027f3" />
-<br>
-<br>
-<br>
-<ins>Phase 8: Creating additional measures (DAX)</ins>
-<br>
-<br>
-Time has come to identify which other measures would be interesting for the report. This includes count of total rows, average values, % ratios, Month-over-Month growth, etc.
-A few examples of the calculated measures created at this stage:
-<br>
-<br>
-Total Transactions = COUNTROWS('fact_customer_transactions')
-<br>
-Churn Transactions = CALCULATE(COUNTROWS(fact_customer_transactions),fact_customer_transactions[Status]="Churned")
-<br>
-Churn Rate = DIVIDE ([Churn Transactions],[Total Transactions],0)
-<br>
-Churn Losses = [Avg Charge Churned] * [Churn Transactions] * (-1)
-<br>
-% Churned Losses = DIVIDE([Churn Losses],[Total Revenue],0)
-<br>
-<br>
-<br>
-<ins>Phase 9: Selecting key insights and creating the report</ins>
-<br>
-<br>
-The report is made by 5 dashboards, as displayed at the bottom of this page. Buttons on the left allow to easily switch from one to another dashboard.
-<br>
-Brief description of the dashboards:
+Here is a description of each dashboard:
 <br>
 <br>
 
-**1. Churn Overview**: a list of KPI on churned and joined customers and a summary of the main reasons indicated by customers when asked why they decided to cancel their contract, in order to immediately capture the general situation.
-<br>
-
-**2. Demographic comparison**: a comparison of key metrics and demographic attributes between customers who stayed and those who churned, to understand which ones present significant differences between the two sub-groups and which not.
-<br>
-
-**3. Product comparison**: an extension of previous analysis but focusing on product characteristics rather than customer profile, to capture the different products that customers were using when deciding to opt out or renew.
-<br>
-
-**4. Churn Map**: a dashboard capturing all relevant geographical differences, with two charts focusing on main cities and a full map where the slicer can filter by the reason for churning, and the data points are further labeled by length of tenure in months (color of the dot) and monthly charge (size of the dot).
-<br>
-
-**5. Time Series:** it displays the most interesting month-over-month evolution in % compared to previous month, and two further stacked bar charts that cross check motivation for churning by month, and churn in large cities by quarter, capturing significant differences.
+**1. Overview on Stock Health**: this executive summary displays the main KPIs at the top, followed by the status of each individual item in stock, in red if stock is sufficient and red if it needs replenishment. There is also a label for those items that are overstocked. Additional graphs also illustrate the situation in terms of broad item category and detailed item description.
 <br>
 <br>
+<img width="1421" height="797" alt="s01" src="https://github.com/user-attachments/assets/5a66e8a6-a10a-41f0-8885-192560923368" />
 <br>
-<ins>Phase 10: Summarizing prescriptive actions</ins>
+<br>
+**2. Reorder Trigger**: an immediately actionable page that calculates which and how many items should be purchased to replenish stock. With Power Automate a simple button allows to send an email to the responsible individuals, listing item codes, supplier name, quantities, unit and total costs that should be included in the next purchase order. Additional charts show the risk level of the missing items and their lead time.
+<br>
+<br>
+<img width="1417" height="795" alt="s02" src="https://github.com/user-attachments/assets/a344dfc1-6d0c-45c2-8d7f-8de9ad8bcced" />
+<br>
+<br>
+**3. Demand Velocity and Stock Burn Rate**: with a single choice filter, for product at a time we are able to see the total quantities sold and daily burn rate throughout the year, other than key metrics such as current stock level, average daily consumption and days of supply remaining. This chart highlights a fundamental issue of the current inventory structure where we notice that items with least days of supply remaining also have larger lead time. More detail in the Insights section at point # 1.
+<br>
+<br>
+<img width="1417" height="797" alt="s03" src="https://github.com/user-attachments/assets/1b93e3b7-a719-453f-923c-d449adb038d0" />
+<br>
+<br>
+**4. Regional Performance**: a dashboard capturing all relevant geographical differences across the four branch that order parts from the warehouse. Some are performing better and some worse, but overall we notice that differences are not significant. In addition, we can see that orders follow certain patterns, as each branch's top order has the same amount, which suggests strict purchasing procedures.
+<br>
+<br>
+<img width="1421" height="800" alt="s04" src="https://github.com/user-attachments/assets/9128179c-b5ee-40fa-84d1-6ebdb2be44ff" />
+<br>
+<br>
+**5. Staff Performance:** very similar to the previous branch chart, but covering the composition across the different staff members ordering parts instead. I would have expected much more difference in terms of parts ordered between the three opticians and the surgeon, but their behavior is very similar, which is unconvincing in terms of source data.
+<br>
+<br>
+<img width="1421" height="797" alt="s05" src="https://github.com/user-attachments/assets/304506b9-d776-4003-8c6d-6c987b3c2b13" />
+<br>
+<br>
+**6. Financial ABC Stratification:** the dashboard shows the results of the Pareto analysis and the distribution of each item into the respective ABC class. The most valuable products are surgical items, while contact lenses and solutions are cheaper. The supplier concentration donut chart also shows this pattern, where the almost even distribution across the four main categories in terms of quantity changes completely if instead of considering the quantities sold we look at the associated revenue.
+<br>
+<br>
+<img width="1420" height="797" alt="s06" src="https://github.com/user-attachments/assets/e7ba3fdf-9c97-4bd6-b9c0-30eced4d38a9" />
+<br>
+<br>
+**7. Pricing & Profit Simulation:** since the source data is not stating what the selling price is, we can create a dashboard that allows to select possible scenarios and determine the relative profit based on the defined markups. A base markup on different product categories is set, then an additional price markup can be defined, and the charts show the resulting retail revenue and gross profit %.
+<br>
+<br>
+<img width="1417" height="797" alt="s07" src="https://github.com/user-attachments/assets/a29c7822-7339-41ea-9e86-2c3e6b301cc0" />
+<br>
+<br>
+<br>
+<ins>Summarizing prescriptive actions</ins>
 <br>
 <br>
 After viewing the report, the users should take their own conclusions based on their business knowledge. 
@@ -210,27 +140,4 @@ On the basis of my limited knowledge of the market and the company, I list some 
 - *ACTION:* the company should focus on an all-year-round strategy rather than specific ones in certain key periods. Customers seem to churn at any time with no particular peaks of dissatisfaction. (note: dates were generated artificially and randomly for this project's purpose, as explained in phase 2 !).
 <br>
 <br>
-Full report preview:
 <br>
-<br>
-<img width="1421" height="797" alt="s01" src="https://github.com/user-attachments/assets/5a66e8a6-a10a-41f0-8885-192560923368" />
-<br>
-<br>
-<img width="1417" height="795" alt="s02" src="https://github.com/user-attachments/assets/a344dfc1-6d0c-45c2-8d7f-8de9ad8bcced" />
-<br>
-<br>
-<img width="1417" height="797" alt="s03" src="https://github.com/user-attachments/assets/1b93e3b7-a719-453f-923c-d449adb038d0" />
-<br>
-<br>
-<img width="1421" height="800" alt="s04" src="https://github.com/user-attachments/assets/9128179c-b5ee-40fa-84d1-6ebdb2be44ff" />
-<br>
-<br>
-<img width="1421" height="797" alt="s05" src="https://github.com/user-attachments/assets/304506b9-d776-4003-8c6d-6c987b3c2b13" />
-<br>
-<br>
-<img width="1420" height="797" alt="s06" src="https://github.com/user-attachments/assets/e7ba3fdf-9c97-4bd6-b9c0-30eced4d38a9" />
-<br>
-<br>
-<img width="1417" height="797" alt="s07" src="https://github.com/user-attachments/assets/a29c7822-7339-41ea-9e86-2c3e6b301cc0" />
-
-
