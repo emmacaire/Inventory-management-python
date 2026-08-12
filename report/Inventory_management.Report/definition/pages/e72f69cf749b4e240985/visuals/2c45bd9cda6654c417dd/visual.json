@@ -1,0 +1,281 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "2c45bd9cda6654c417dd",
+  "position": {
+    "x": 428.936170212766,
+    "y": 76.838905775075986,
+    "z": 13000,
+    "height": 45.714285714285715,
+    "width": 182.85714285714286,
+    "tabOrder": 13000
+  },
+  "visual": {
+    "visualType": "FlowVisual_C29F1DCC_81F5_4973_94AD_0517D44CC06A",
+    "query": {
+      "queryState": {
+        "table": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact_inventory_transactions"
+                    }
+                  },
+                  "Property": "SKU"
+                }
+              },
+              "queryRef": "Fact_inventory_transactions.SKU",
+              "nativeQueryRef": "SKU"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim_product_master_list"
+                    }
+                  },
+                  "Property": "Supplier"
+                }
+              },
+              "queryRef": "Dim_product_master_list.Supplier",
+              "nativeQueryRef": "Supplier"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Calculated_fields"
+                    }
+                  },
+                  "Property": "Required Stock"
+                }
+              },
+              "queryRef": "Calculated_fields.Required Stock",
+              "nativeQueryRef": "Required Stock"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim_product_master_list"
+                    }
+                  },
+                  "Property": "Unit_Cost"
+                }
+              },
+              "queryRef": "Dim_product_master_list.Unit_Cost",
+              "nativeQueryRef": "Unit_Cost"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Calculated_fields"
+                    }
+                  },
+                  "Property": "Cost of Required Stock"
+                }
+              },
+              "queryRef": "Calculated_fields.Cost of Required Stock",
+              "nativeQueryRef": "Cost of Required Stock"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Fact_inventory_transactions"
+                  }
+                },
+                "Property": "SKU"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "objects": {
+      "flowInfo": [
+        {
+          "properties": {
+            "FlowId": {
+              "expr": {
+                "Literal": {
+                  "Value": "'/providers/Microsoft.ProcessSimple/environments/Default-e4bd69ff-e6f7-4c2e-b247-41b54ba2490e/flows/0ce2aff7-58a2-45f0-938d-cfb6231ff593'"
+                }
+              }
+            },
+            "ManagementUri": {
+              "expr": {
+                "Literal": {
+                  "Value": "'https://emea.api.flow.microsoft.com/providers/Microsoft.ProcessSimple'"
+                }
+              }
+            },
+            "EnvironmentId": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Default-e4bd69ff-e6f7-4c2e-b247-41b54ba2490e'"
+                }
+              }
+            },
+            "EnvironmentLocation": {
+              "expr": {
+                "Literal": {
+                  "Value": "'europe'"
+                }
+              }
+            },
+            "EnvironmentRegion": {
+              "expr": {
+                "Literal": {
+                  "Value": "''"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "buttonText": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Send Reorder e-mail'"
+                }
+              }
+            }
+          },
+          "selector": {
+            "id": "default"
+          }
+        }
+      ],
+      "buttonFill": [
+        {
+          "properties": {
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 2,
+                      "Percent": 0.2
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "id": "default"
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "b5b523c42dc978312773",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Fact_inventory_transactions"
+              }
+            },
+            "Property": "SKU"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "393a70c8448a73065801",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Calculated_fields"
+              }
+            },
+            "Property": "Required Stock"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "2518810067075d407ea5",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Calculated_fields"
+              }
+            },
+            "Property": "Cost of Required Stock"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "454409fa0bdd760da031",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim_product_master_list"
+              }
+            },
+            "Property": "Unit_Cost"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "2ef5eed9dcaa057889e8",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim_product_master_list"
+              }
+            },
+            "Property": "Supplier"
+          }
+        },
+        "type": "Categorical"
+      }
+    ]
+  }
+}

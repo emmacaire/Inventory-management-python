@@ -1,0 +1,50 @@
+table 'Select Count Type'
+	lineageTag: f3caf221-fca4-4388-b2ab-92b63555c5a4
+
+	column 'Select Count Type'
+		dataType: string
+		lineageTag: ad3f51a1-2046-4044-ac32-bf9213a306b7
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'Select Count Type Order'
+
+		relatedColumnDetails
+			groupByColumn: 'Select Count Type Fields'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Select Count Type Fields'
+		isHidden
+		lineageTag: 8842b2b0-d88e-4fe7-95a0-3c3204a5a3b4
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'Select Count Type Order'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Select Count Type Order'
+		isHidden
+		formatString: 0
+		lineageTag: 34c321f8-e063-4493-8a6f-a7685deb0094
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Select Count Type' = calculated
+		mode: import
+		source =
+				{
+				    ("Revenue", NAMEOF([Total Revenue]), 0),
+				    ("Product Count", NAMEOF([Total Qty Sold]), 1),
+				    ("Order Count", NAMEOF([Total Orders]), 2)
+				}
+
+	annotation PBI_Id = 85136eb2101a46a2ae64a76a35c951c7
+

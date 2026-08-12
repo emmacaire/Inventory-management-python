@@ -1,0 +1,101 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/report/3.3.0/schema.json",
+  "themeCollection": {
+    "baseTheme": {
+      "name": "CY26SU05",
+      "reportVersionAtImport": {
+        "visual": "2.9.0",
+        "report": "3.3.0",
+        "page": "2.3.1"
+      },
+      "type": "SharedResources"
+    }
+  },
+  "objects": {
+    "section": [
+      {
+        "properties": {
+          "verticalAlignment": {
+            "expr": {
+              "Literal": {
+                "Value": "'Top'"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "resourcePackages": [
+    {
+      "name": "SharedResources",
+      "type": "SharedResources",
+      "items": [
+        {
+          "name": "CY26SU05",
+          "path": "BaseThemes/CY26SU05.json",
+          "type": "BaseTheme"
+        }
+      ]
+    },
+    {
+      "name": "RegisteredResources",
+      "type": "RegisteredResources",
+      "items": [
+        {
+          "name": "background_inventory45869313840545456.png",
+          "path": "background_inventory45869313840545456.png",
+          "type": "Image"
+        },
+        {
+          "name": "background_inventory5334534479388817.png",
+          "path": "background_inventory5334534479388817.png",
+          "type": "Image"
+        },
+        {
+          "name": "i017875484983096909.png",
+          "path": "i017875484983096909.png",
+          "type": "Image"
+        },
+        {
+          "name": "i026583368898132812.png",
+          "path": "i026583368898132812.png",
+          "type": "Image"
+        },
+        {
+          "name": "i038357487122179235.png",
+          "path": "i038357487122179235.png",
+          "type": "Image"
+        },
+        {
+          "name": "i047304892039265062.png",
+          "path": "i047304892039265062.png",
+          "type": "Image"
+        },
+        {
+          "name": "i059850932172449239.png",
+          "path": "i059850932172449239.png",
+          "type": "Image"
+        },
+        {
+          "name": "i068252684327162696.png",
+          "path": "i068252684327162696.png",
+          "type": "Image"
+        },
+        {
+          "name": "i0702195694684922833.png",
+          "path": "i0702195694684922833.png",
+          "type": "Image"
+        }
+      ]
+    }
+  ],
+  "settings": {
+    "useStylableVisualContainerHeader": true,
+    "exportDataMode": "AllowSummarized",
+    "defaultDrillFilterOtherVisuals": true,
+    "allowChangeFilterTypes": true,
+    "useEnhancedTooltips": true,
+    "useDefaultAggregateDisplayName": true
+  }
+}

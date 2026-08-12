@@ -1,0 +1,80 @@
+table Dim_date
+	lineageTag: 9cc0cf5b-485e-4cfd-b534-19dc7df73549
+	dataCategory: Time
+
+	column Date
+		isKey
+		formatString: d mmmm\, yyyy
+		lineageTag: ade02f34-269d-4045-b4a6-7ab822e0abbc
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Date]
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column Year = YEAR('Dim_date'[Date])
+		formatString: 0
+		lineageTag: 0bc5dd53-4178-4edc-b1ed-4732c2c39cc5
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Nr' = MONTH('Dim_date'[Date])
+		isHidden
+		formatString: 0
+		lineageTag: b465d657-9295-4f23-a538-100ebbe1962a
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column Month = FORMAT('Dim_date'[Date], "MMM")
+		lineageTag: a4f1fe5e-bffa-4518-a627-96cc27691ccb
+		summarizeBy: none
+		sortByColumn: 'Month Nr'
+
+		annotation SummarizationSetBy = Automatic
+
+	column Quarter = "Q" & FORMAT('Dim_date'[Date], "Q")
+		lineageTag: af99c269-650a-49af-80c0-ae3254786097
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Weekday Nr' = WEEKDAY('Dim_date'[Date], 2)
+		isHidden
+		formatString: 0
+		lineageTag: 159e8713-9e8b-446b-a528-2f6b58a9a2c4
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column Weekday = FORMAT('Dim_date'[Date], "ddd")
+		lineageTag: 1c9f9074-bc48-4c65-935b-6f491d19f70b
+		summarizeBy: none
+		sortByColumn: 'Weekday Nr'
+
+		annotation SummarizationSetBy = Automatic
+
+	hierarchy 'Year Hierarchy'
+		lineageTag: 61e775d5-fa18-441c-a2a0-ac6c72b31853
+
+		level Year
+			lineageTag: dbc843b4-ac4b-4e89-bdd2-dc65ebff3693
+			column: Year
+
+		level Quarter
+			lineageTag: 628ca593-6858-4610-ba9d-b1c1a1dd8d1c
+			column: Quarter
+
+		level Month
+			lineageTag: 54992cea-9571-4818-8ab3-26ad0f6a20e5
+			column: Month
+
+	partition Dim_date = calculated
+		mode: import
+		source = CALENDAR(MIN('Fact_inventory_transactions'[Date]), MAX('Fact_inventory_transactions'[Date]))
+
+	annotation PBI_Id = 8fd389d136f44f608c3b180aff953051
+

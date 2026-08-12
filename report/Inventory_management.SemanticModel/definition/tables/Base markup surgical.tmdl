@@ -1,0 +1,28 @@
+table 'Base markup surgical'
+	lineageTag: 6ec1bad8-f8c1-46ca-9bc1-55fcbb616efc
+
+	measure 'Base markup surgical Value' = SELECTEDVALUE('Base markup surgical'[Base markup surgical])
+		lineageTag: c18fd8ef-a8b5-464a-9229-5800ec2e7178
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Base markup surgical'
+		lineageTag: a29946fa-71d2-4630-875d-68bfb9990023
+		summarizeBy: none
+		sourceColumn: [Value]
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 0
+				}
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition 'Base markup surgical' = calculated
+		mode: import
+		source = GENERATESERIES(1, 5, 0.1)
+
+	annotation PBI_Id = 89b2a0703306462db4ea0d51adab672f
+

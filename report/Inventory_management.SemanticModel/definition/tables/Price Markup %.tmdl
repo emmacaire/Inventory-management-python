@@ -1,0 +1,26 @@
+table 'Price Markup %'
+	lineageTag: a6518f01-04d4-4477-bc75-0b3ca64ef915
+
+	measure 'Price Markup % Value' = SELECTEDVALUE('Price Markup %'[Price Markup %], 15)
+		formatString: 0
+		lineageTag: fdd20c35-ca4a-4be7-8ee4-425cf1dc1d44
+
+	column 'Price Markup %'
+		formatString: 0%;-0%;0%
+		lineageTag: 2f604644-b06f-415b-b1fa-3d56bb4ca541
+		summarizeBy: none
+		sourceColumn: [Value]
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 0
+				}
+
+		annotation SummarizationSetBy = User
+
+	partition 'Price Markup %' = calculated
+		mode: import
+		source = GENERATESERIES(0, 1, 0.05)
+
+	annotation PBI_Id = fdccf37ae0e142b899e1947f83cb217a
+

@@ -1,0 +1,8 @@
+relationship AutoDetected_63d8da34-4a32-4d40-a02f-739ee30df916
+	fromColumn: Fact_inventory_transactions.SKU
+	toColumn: Dim_product_master_list.SKU
+
+relationship e0bb0b1f-2745-664c-02c4-dd457af84048
+	fromColumn: Fact_inventory_transactions.Date
+	toColumn: Dim_date.Date
+

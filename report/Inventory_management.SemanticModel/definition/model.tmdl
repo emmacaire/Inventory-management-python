@@ -1,0 +1,25 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-US
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_QueryOrder = ["Fact_inventory_transactions","Dim_product_master_list","Calculated_measures","Calculated_fields"]
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table Fact_inventory_transactions
+ref table Dim_product_master_list
+ref table Dim_date
+ref table Calculated_fields
+ref table 'Price Markup %'
+ref table 'Base markup surgical'
+ref table 'Base markup frames'
+ref table 'Select Count Type'
+
+ref cultureInfo en-US
+

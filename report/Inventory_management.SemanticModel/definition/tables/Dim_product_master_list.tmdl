@@ -1,0 +1,178 @@
+table Dim_product_master_list
+	lineageTag: f15b77ca-7a07-4910-b175-a8e06f32f515
+
+	column SKU
+		dataType: string
+		lineageTag: 9f0e1883-0350-4693-9b8a-e22a7faac4db
+		summarizeBy: none
+		sourceColumn: SKU
+
+		annotation SummarizationSetBy = Automatic
+
+	column Description
+		dataType: string
+		lineageTag: e14c10fc-be88-4b34-ba7c-e5b72d47c76f
+		summarizeBy: none
+		sourceColumn: Description
+
+		annotation SummarizationSetBy = Automatic
+
+	column Category
+		dataType: string
+		lineageTag: 62cc7f1c-3aa3-414c-95b1-ad4a85d3b63c
+		summarizeBy: none
+		sourceColumn: Category
+
+		annotation SummarizationSetBy = Automatic
+
+	column Supplier
+		dataType: string
+		lineageTag: 8c9ebcb8-42e8-475b-8b29-0ce7915d485a
+		summarizeBy: none
+		sourceColumn: Supplier
+
+		annotation SummarizationSetBy = Automatic
+
+	column Unit_Cost
+		dataType: double
+		formatString: "€"\ #,0.00;-"€"\ #,0.00;"€"\ #,0.00
+		lineageTag: c2b10d41-4eaa-4641-a171-7422e3bb4244
+		summarizeBy: none
+		sourceColumn: Unit_Cost
+
+		annotation SummarizationSetBy = Automatic
+
+	column Lead_Time_Days
+		dataType: int64
+		formatString: 0
+		lineageTag: 29d4ea07-628a-450f-a972-71c22cf0e65c
+		summarizeBy: none
+		sourceColumn: Lead_Time_Days
+
+		annotation SummarizationSetBy = Automatic
+
+	column Stock_Level
+		dataType: int64
+		formatString: 0
+		lineageTag: 61c32ef6-7389-4a57-ad39-935cc78ff7bf
+		summarizeBy: none
+		sourceColumn: Stock_Level
+
+		annotation SummarizationSetBy = Automatic
+
+	column Reorder_Point
+		dataType: int64
+		formatString: 0
+		lineageTag: d0a64ca4-ce96-4cec-bb06-507ae2e1a933
+		summarizeBy: none
+		sourceColumn: Reorder_Point
+
+		annotation SummarizationSetBy = Automatic
+
+	column Total_Value
+		dataType: double
+		formatString: 0
+		lineageTag: d8778e3a-e219-4a47-b2f5-b3ef4884d1d9
+		summarizeBy: none
+		sourceColumn: Total_Value
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Risk Level'
+		dataType: string
+		lineageTag: 9a3304cb-b691-474a-a041-3afd5bf276e5
+		summarizeBy: none
+		sourceColumn: Risk Level
+		sortByColumn: 'Risk Level num'
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Risk Level num'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 0b0c337c-f163-4f81-9316-a7b53b1dfe9f
+		summarizeBy: none
+		sourceColumn: Risk Level num
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Product Revenue' =
+			SUMX(
+			    RELATEDTABLE(Fact_inventory_transactions),
+			    Fact_inventory_transactions[Revenue]
+			)
+		formatString: "€"\ #,0.00;-"€"\ #,0.00;"€"\ #,0.00
+		lineageTag: c1963758-2477-4555-a036-1c21f525ec2c
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'ABC Class' = ```
+			
+			VAR TotalAllRevenue = SUM(Dim_product_master_list[Product Revenue])
+			VAR CurrentSKURevenue = Dim_product_master_list[Product Revenue]
+			
+			VAR CumulativeRevenue = 
+			    CALCULATE(
+			        SUM(Dim_product_master_list[Product Revenue]),
+			        FILTER(
+			            ALL(Dim_product_master_list),
+			            Dim_product_master_list[Product Revenue] >= CurrentSKURevenue
+			        )
+			    )
+			
+			VAR RunningPct = DIVIDE(CumulativeRevenue, TotalAllRevenue, 0)
+			
+			RETURN
+			    SWITCH(
+			        TRUE(),
+			        RunningPct <= 0.80, "Class A",
+			        RunningPct <= 0.95, "Class B",
+			        "Class C"
+			    )
+			```
+		lineageTag: c83a9178-7976-46e8-aedb-c0cfa567d6f0
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Class Code' = RIGHT(Dim_product_master_list[ABC Class], 1)
+		lineageTag: 2e2b646a-17e2-4cf5-99af-9781b436d2e8
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	hierarchy 'Category Hierarchy'
+		lineageTag: 1c753425-67b7-4657-8198-61b90a00e485
+
+		level Category
+			lineageTag: e1597627-83bb-475b-acd3-a2b825785d59
+			column: Category
+
+		level Description
+			lineageTag: 7f5a352d-e1fa-400a-9a33-fcb4514a135b
+			column: Description
+
+	partition Dim_product_master_list = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\Users\emman\Desktop\Training\Datasets\Inventory medical\Product_Master_List.csv"),[Delimiter=",", Columns=9, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"SKU", type text}, {"Description", type text}, {"Category", type text}, {"Supplier", type text}, {"Unit_Cost", type number}, {"Lead_Time_Days", Int64.Type}, {"Stock_Level", Int64.Type}, {"Reorder_Point", Int64.Type}, {"Total_Value", type number}}),
+				    #"Added Conditional Column" = Table.AddColumn(#"Changed Type", "Risk Level", each if [SKU] = "LENS-D-01" then "Low" else if [SKU] = "LENS-M-02" then "Medium" else if [SKU] = "FRM-M-10" then "Medium" else if [SKU] = "FRM-W-12" then "Medium" else if [SKU] = "SOL-S-01" then "Low" else if [SKU] = "SURG-L-01" then "High" else if [SKU] = "SURG-P-02" then "Medium" else null),
+				    #"Changed Type1" = Table.TransformColumnTypes(#"Added Conditional Column",{{"Risk Level", type text}}),
+				    #"Added Conditional Column1" = Table.AddColumn(#"Changed Type1", "Risk Level num", each if [Risk Level] = "Low" then 1 else if [Risk Level] = "Medium" then 2 else if [Risk Level] = "High" then 3 else null),
+				    #"Changed Type2" = Table.TransformColumnTypes(#"Added Conditional Column1",{{"Risk Level num", Int64.Type}})
+				in
+				    #"Changed Type2"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

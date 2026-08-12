@@ -1,0 +1,347 @@
+table Calculated_fields
+	lineageTag: 5e64416c-5e95-4e8a-9f6a-566133e4420d
+
+	measure 'Total Qty Sold' = SUM('Fact_inventory_transactions'[Qty_Sold])
+		formatString: #,0
+		lineageTag: af1478cb-a207-4dea-a938-f7166a79a04a
+
+	measure 'Total Inventory Cost' = SUM('Fact_inventory_transactions'[Revenue])
+		lineageTag: ef09195d-54a1-4f1a-9d12-83d3b3f27aad
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Current Stock Level' = SUM('Dim_product_master_list'[Stock_Level])
+		formatString: 0
+		lineageTag: 07bc4b75-0583-4f83-9ba5-b0aeb273a8f3
+
+	measure 'Total Tied Capital' = SUM('Dim_product_master_list'[Total_Value])
+		formatString: "€"\ #,0.0;-"€"\ #,0.0;"€"\ #,0.0
+		lineageTag: 7d51198d-169b-4517-876e-e0b3476904ef
+
+	measure 'Simulated Retail Revenue' = ```
+			
+			SUMX(
+			    KEEPFILTERS(Values('Dim_product_master_list'[Category])),
+			    VAR BaseMarkup = 
+			        SWITCH(
+			            'Dim_product_master_list'[Category],
+			            "Surgical", 'Base markup surgical'[Base markup surgical Value],  
+			            "Frames", 'Base markup frames'[Base markup frames Value],         
+			            1.25                    
+			        )
+			    VAR SliderModifier = 'Price Markup %'[Price Markup % Value]
+			    RETURN
+			    [Total Revenue] * (BaseMarkup + SliderModifier)
+			)
+			```
+		formatString: "€"\ #,0.00;-"€"\ #,0.00;"€"\ #,0.00
+		lineageTag: 02d5891c-8d34-4a3e-aa19-35e6c8eda1a4
+
+	measure 'Simulated Gross Profit Margin %' =
+			
+			DIVIDE(
+			    [Simulated Retail Revenue] - SUM('Fact_inventory_transactions'[Revenue]),
+			    [Simulated Retail Revenue],
+			    0
+			)
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: 701fb844-c930-4098-be94-fe20e50f33f2
+
+	measure 'Daily Burn Rate' =
+			
+			AVERAGEX(
+			    CALCULATETABLE(
+			        'Dim_date',
+			        DATESINPERIOD('Dim_date'[Date], MAX('Dim_date'[Date]), -30, DAY)
+			    ),
+			    CALCULATE(SUM('Fact_inventory_transactions'[Qty_Sold]))
+			)
+		lineageTag: a2d433a6-4431-4d8e-a5ac-c3b9040981ad
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Current Inventory Cost' = SUMX('Dim_product_master_list','Dim_product_master_list'[Stock_Level]*'Dim_product_master_list'[Unit_Cost])
+		formatString: "€"\ #,0.0;-"€"\ #,0.0;"€"\ #,0.0
+		lineageTag: 6af2900c-247c-47a2-aec5-4d7ca7581ca6
+
+	measure 'MoM Qty Change %' =
+			
+			VAR CurrentMonthQty = SUM('Fact_inventory_transactions'[Qty_Sold])
+			VAR PreviousMonthQty = CALCULATE(SUM('Fact_inventory_transactions'[Qty_Sold]), DATEADD('Dim_date'[Date], -1, MONTH))
+			RETURN
+			DIVIDE(CurrentMonthQty - PreviousMonthQty, PreviousMonthQty, 0)
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: d708afd1-e698-4ee0-aa05-a72693969938
+
+	measure 'Total YTD Revenue'
+		lineageTag: f016f738-8e26-488e-97bb-84e34581870b
+
+	measure '% SKUs below ROP' =
+			DIVIDE(
+			                SUMX(
+			                    Dim_product_master_list,
+			                    IF(
+			                        Dim_product_master_list[Reorder_Point]-Dim_product_master_list[Stock_Level]>=0,
+			                        1,
+			                        0
+			                    )),
+			                DISTINCTCOUNT(Dim_product_master_list[SKU]),
+			                0)
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: 4e5c46f0-a282-45b0-83bb-7ab525c56b22
+
+	measure 'No. SKUs below ROP' =
+			SUMX(
+			                    Dim_product_master_list,
+			                    IF(
+			                        Dim_product_master_list[Reorder_Point]-Dim_product_master_list[Stock_Level]>=0,
+			                        1,
+			                        0
+			                    ))
+		formatString: 0
+		lineageTag: 72c6846f-2fd2-43b8-a3bc-ddded732fd9c
+
+	measure 'Stock Balance' =
+			SUMX(
+			                    Dim_product_master_list,
+			                    Dim_product_master_list[Stock_Level]-Dim_product_master_list[Reorder_Point])
+		formatString: 0
+		lineageTag: 1906e707-11bc-43ba-a84d-51e8512558a5
+
+	measure 'Stock Balance %' =
+			SUMX(
+			                    Dim_product_master_list,
+			                    DIVIDE(
+			                        Dim_product_master_list[Stock_Level]-Dim_product_master_list[Reorder_Point],
+			                        Dim_product_master_list[Reorder_Point],
+			                        0))
+		formatString: 0%;-0%;0%
+		lineageTag: 593f638c-be57-481c-adcf-0c6ace87ecc9
+
+	measure 'SKU Stock Status Message' = ```
+			
+			VAR SKUsNeedingReorder = 
+			    COUNTROWS(
+			        FILTER(
+			            Dim_product_master_list,
+			            Dim_product_master_list[Stock_Level] <= Dim_product_master_list[Reorder_Point]
+			        )
+			    )
+			VAR TotalStock = SUM(Dim_product_master_list[Stock_Level])
+			VAR TotalReorderThreshold = SUM(Dim_product_master_list[Reorder_Point])
+			
+			RETURN
+			    SWITCH(
+			        TRUE(),
+			        SKUsNeedingReorder > 0, 
+			            "Reorder Needed",
+			
+			        TotalStock > (TotalReorderThreshold * 2), 
+			            "Overstocked",
+			
+			        "Healthy Stock"
+			    )
+			```
+		lineageTag: f996e1ef-8b9d-4592-93a7-b44aaaf10605
+
+	measure 'Target Inventory' = 0
+		formatString: 0
+		lineageTag: 36fdf431-9526-4c77-be54-65f5f57557fe
+
+	measure 'Required Stock' =
+			SUMX(
+			                    Dim_product_master_list,
+			                    IF((Dim_product_master_list[Stock_Level]-Dim_product_master_list[Reorder_Point])<0,
+			                    [Stock Balance]*(-1),
+			                    BLANK()))
+		formatString: 0
+		lineageTag: 9416a08d-0724-43fe-92ef-78a0799b38f6
+
+	measure 'Cost of Required Stock' = CALCULATE([Required Stock]*AVERAGE(Dim_product_master_list[Unit_Cost]))
+		formatString: "€"\ #,0.00;-"€"\ #,0.00;"€"\ #,0.00
+		lineageTag: 945bf01f-1c15-405a-b211-7b353b0c8970
+
+	measure 'Stock Balance Value' =
+			SUMX(
+			                    Dim_product_master_list,
+			                    (Dim_product_master_list[Stock_Level]-Dim_product_master_list[Reorder_Point])*Dim_product_master_list[Unit_Cost])
+		lineageTag: 2eb38ae9-0b70-4bed-9a3d-0f437ecfc309
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Required Stock Value' =
+			SUMX(
+			                    Dim_product_master_list,
+			                    IF((Dim_product_master_list[Stock_Level]-Dim_product_master_list[Reorder_Point])<0,
+			                    [Stock Balance Value]*(-1),
+			                    BLANK()))
+		lineageTag: c8d27247-2080-4bfd-a9e8-1c845f4b4ca2
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Average Revenue per Branch (Unf)' =
+			CALCULATE(
+			                                            SUM(Fact_inventory_transactions[Revenue])/4,
+			                                            REMOVEFILTERS()
+			                                            )
+		formatString: "€"\ #,0;-"€"\ #,0;"€"\ #,0
+		lineageTag: 58cd90f8-e460-494e-acb0-2e560f59eba8
+
+	measure 'Average Monthly Consumption (units)' = SUM(Fact_inventory_transactions[Qty_Sold])/12
+		lineageTag: a5d47b5b-7c7e-406a-a98c-b3f2d29dfe61
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Average Daily Consumption (units)' = SUM(Fact_inventory_transactions[Qty_Sold])/365
+		formatString: 0.0
+		lineageTag: 4cef8ab2-71ad-4a05-b67a-9d75d20d0f54
+
+	measure 'Days of supply remaining' =
+			DIVIDE(
+			            [Current Stock Level],
+			            [Average Daily Consumption (units)],
+			            0
+			        )
+		formatString: 0.0
+		lineageTag: 2071a324-09e0-4f62-a9b5-8d683589a414
+
+	measure 'Average Revenue per Staff (Unf)' =
+			CALCULATE(
+			                                            SUM(Fact_inventory_transactions[Revenue])/4,
+			                                            REMOVEFILTERS()
+			                                            )
+		lineageTag: 616994e7-8cec-4dc8-a647-a145bcda7915
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Class A Revenue' = CALCULATE([Total Revenue],Dim_product_master_list[ABC Class]="Class A")
+		lineageTag: 44b2a2e8-5212-418f-b6fc-e48ca369bc73
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Class B Revenue' = CALCULATE([Total Revenue],Dim_product_master_list[ABC Class]="Class B")
+		lineageTag: 6ba5e23f-53e2-4f88-bdc8-f77bc0756226
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Class C Revenue' = CALCULATE([Total Revenue],Dim_product_master_list[ABC Class]="Class C")
+		lineageTag: 050b89f8-db1c-405b-8799-2fa76bf5ad97
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Class A Revenue Contribution %' =
+			
+			DIVIDE([Class A Revenue], [Total Revenue], 0)
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: 77a423c3-28b9-45ba-98b7-7074601d1c94
+
+	measure 'Class B Revenue Contribution %' =
+			
+			DIVIDE([Class B Revenue], [Total Revenue], 0)
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: d8a58d94-6fd4-4d4a-af10-5fc275fac767
+
+	measure 'Class C Revenue Contribution %' =
+			
+			DIVIDE([Class C Revenue], [Total Revenue], 0)
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: 4d3a2274-3174-464a-94a9-2932041fab1f
+
+	measure 'Top Revenue SKU Info' = ```
+			
+			VAR TopSKU = 
+			    TOPN(1, ALL(Dim_product_master_list[SKU]), [Total Revenue], DESC)
+			VAR TopRevenue = 
+			    CALCULATE([Total Revenue], TopSKU)
+			VAR SKUName = 
+			    CONCATENATEX(TopSKU, Dim_product_master_list[SKU], ", ")
+			RETURN
+			    SKUName & " – " & FORMAT(TopRevenue, "€ #,##0")
+			```
+		lineageTag: 44cf336c-7b2c-40d6-bdb3-9e5fe2cac480
+
+	measure 'Cumulative Revenue %' = ```
+			
+			
+			VAR TotalAllRevenue = CALCULATE([Total Revenue], ALLSELECTED(Dim_product_master_list))
+			
+			VAR CurrentSKURevenue = [Total Revenue]
+			
+			VAR CumulativeRevenue = 
+			    CALCULATE(
+			        [Total Revenue],
+			        FILTER(
+			            ALLSELECTED(Dim_product_master_list[SKU]),
+			            [Total Revenue] >= CurrentSKURevenue
+			        )
+			    )
+			
+			RETURN
+			    DIVIDE(CumulativeRevenue, TotalAllRevenue, 0)
+			```
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: 17307d47-e4d0-4d62-9f97-2c4eff37ec92
+
+	measure 'Cumulative %' = ```
+			
+			VAR TotalAllRevenue = 
+			    CALCULATE(
+			        [Total Revenue], 
+			        ALLSELECTED('Dim_product_master_list')
+			    )
+			
+			VAR CurrentSKURevenue = [Total Revenue]
+			
+			VAR CumulativeRevenue = 
+			    CALCULATE(
+			        [Total Revenue],
+			        FILTER(
+			            ALLSELECTED('Dim_product_master_list'[Description]),
+			            [Total Revenue] >= CurrentSKURevenue
+			        )
+			    )
+			
+			RETURN
+			    DIVIDE(CumulativeRevenue, TotalAllRevenue, 0)
+			```
+		formatString: #,0%;-#,0%;#,0%
+		lineageTag: b50dd1a4-1318-405d-a5ba-5c986047db8e
+
+		extendedProperty MeasureTemplate =
+				{
+				  "version": 0,
+				  "daxTemplateName": "RunningTotal"
+				}
+
+	measure 'Total Revenue' = SUM(Fact_inventory_transactions[Revenue])
+		formatString: "€"\ #,0.0;-"€"\ #,0.0;"€"\ #,0.0
+		lineageTag: 8e928711-5cd2-487b-be41-1fc23145cb30
+
+	measure 'Total Orders' = DISTINCTCOUNT(Fact_inventory_transactions[Order_ID])
+		formatString: 0
+		lineageTag: e7be0d55-2446-409c-84d7-605157640108
+
+	column Measures
+		dataType: string
+		isHidden
+		lineageTag: 0988a310-6132-45a5-b156-3cf5b759e722
+		summarizeBy: none
+		sourceColumn: Measures
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Calculated_fields = m
+		mode: import
+		source =
+				let
+				    Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i44FAA==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [Measures = _t]),
+				    #"Changed Type" = Table.TransformColumnTypes(Source,{{"Measures", type text}})
+				in
+				    #"Changed Type"
+
+	changedProperty = Name
+
+	annotation PBI_ResultType = Table
+

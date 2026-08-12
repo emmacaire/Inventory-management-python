@@ -1,0 +1,81 @@
+table Fact_inventory_transactions
+	lineageTag: ade9a75b-79d3-4b0c-8001-2232c3593d09
+
+	column Order_ID
+		dataType: string
+		lineageTag: 4fb60c28-2ad2-4bc2-b450-e700a1dbf829
+		summarizeBy: none
+		sourceColumn: Order_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: c431bf9f-576f-4390-ad03-93e2cc90abdd
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column SKU
+		dataType: string
+		lineageTag: ad660fb1-341e-4e15-b893-8096e4e55e95
+		summarizeBy: none
+		sourceColumn: SKU
+
+		annotation SummarizationSetBy = Automatic
+
+	column Qty_Sold
+		dataType: int64
+		formatString: 0
+		lineageTag: d638de4c-0b0e-40db-8a22-b8aab1d74b8a
+		summarizeBy: sum
+		sourceColumn: Qty_Sold
+
+		annotation SummarizationSetBy = Automatic
+
+	column Location
+		dataType: string
+		lineageTag: 4309cc29-7b99-43ec-863c-b6e393dc9f34
+		summarizeBy: none
+		sourceColumn: Location
+
+		annotation SummarizationSetBy = Automatic
+
+	column Staff_ID
+		dataType: string
+		lineageTag: d3c7c241-2fc0-4677-ad16-2afc53e480b5
+		summarizeBy: none
+		sourceColumn: Staff_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Revenue
+		dataType: double
+		formatString: "€"\ #,0.0;-"€"\ #,0.0;"€"\ #,0.0
+		lineageTag: 006b105b-14ed-483a-92ef-59961d9528c7
+		summarizeBy: sum
+		sourceColumn: Revenue
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Fact_inventory_transactions = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\Users\emman\Desktop\Training\Datasets\Inventory medical\Inventory_Transactions.csv"),[Delimiter=",", Columns=9, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Order_ID", type text}, {"Date", type date}, {"SKU", type text}, {"Qty_Sold", Int64.Type}, {"Location", type text}, {"Staff_ID", type text}, {"Revenue", type number}, {"Lead_Time", Int64.Type}, {"Risk_Level", type text}}),
+				    #"Replaced Value" = Table.ReplaceValue(#"Changed Type"," Risk","",Replacer.ReplaceText,{"Risk_Level"}),
+				    #"Removed Columns" = Table.RemoveColumns(#"Replaced Value",{"Lead_Time", "Risk_Level"}),
+				    #"Replaced Value1" = Table.ReplaceValue(#"Removed Columns","_"," ",Replacer.ReplaceText,{"Staff_ID"})
+				in
+				    #"Replaced Value1"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

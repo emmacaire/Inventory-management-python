@@ -1,0 +1,28 @@
+table 'Base markup frames'
+	lineageTag: aac88d2e-f976-4d8f-87c4-a890874c1b94
+
+	measure 'Base markup frames Value' = SELECTEDVALUE('Base markup frames'[Base markup frames])
+		lineageTag: 20951190-a2c4-4635-9c78-db09b69d0ecf
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Base markup frames'
+		lineageTag: e5ce81f3-eba4-43da-90b1-a3b6583b19af
+		summarizeBy: none
+		sourceColumn: [Value]
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 0
+				}
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition 'Base markup frames' = calculated
+		mode: import
+		source = GENERATESERIES(1, 5, 0.1)
+
+	annotation PBI_Id = 671b0f70330e47ea91fb88eb83e9db80
+
