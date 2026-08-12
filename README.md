@@ -4,20 +4,23 @@
 <br>
 
 ## 📌 Summary
-The analysis focused on inventory data in a pharma company, offering a wide range of insights on inventory status, re-ordering practices, branch and staff performance, ABC stratification and pricing strategies. There were two main limitations of this dataset:
-  1. data included all outbound transactions of ordered material, but lacked inbound transactions, i.e. purchase orders made throughout the year to replenish stock. Basically it only includes what leaves the warehouse (sales) without registering what enters the warehouse (purchasing). For this reason, the analysis on the purchasing side was only static, focused on current stock, while for the sales side, it was possible to inspect the trend throughout the considered time period.
-  2.  there was no indication of the unit price for each item, only the unit cost. This meant that most of the analysis was focusing on revenue at cost of purchasing, while revenue on selling price was only studied as a simulation, analyzing the possible outcomes of different price markups.
+The analysis focuses on inventory data in a pharma company, offering a wide range of insights on inventory status, re-ordering practices, branch and staff performance, ABC stratification and pricing strategies. However, there are two main limitations of this dataset:
+  1. data includes all outbound transactions of ordered material, but lacks inbound transactions, i.e. purchase orders made throughout the year to replenish stock. Basically it only includes what leaves the warehouse (sales) without registering what enters the warehouse (purchasing). For this reason, the analysis on the purchasing side is static, focused on current stock, while for the sales side, it is possible to inspect the trend throughout the considered time period.
+  2.  there is no indication of the unit price for each item, only the unit cost. This means that most of the analysis is focusing on revenue at cost of purchasing, while revenue on selling price is only studied as a simulation, analyzing the possible outcomes of different price markups.
 
-The analysis was conducted entirely on Power BI Desktop, with extensive use of Power Query for the ETL part and a simple relational model with one fact table and two dimension tables (product master list and date) in the semantic model. The main focus in this project was on the creation of complex DAX formulas that would support inventory management.
+The analysis is conducted entirely on Power BI Desktop, with extensive use of Power Query for the ETL part and a simple relational model with one fact table and two dimension tables (product master list and date) in the semantic model. The main focus in this project is on the creation of complex DAX formulas supporting inventory management.
 The final output is a Power BI report consisting of 7 connected dashboards, including a Power Automate button to notify the required stock replenishment.
 
 A more detailed analysis of the DAX formulas, the dashboard purposes and the derived insights is available below.
 <br>
 <br>
 
-## 📊 Key Deliverables & Artifacts
-* 📂 **Interactive Power BI report:** Download the interactive .pbix [report](./report/Inventory_management.pbix) file to open and interact with the full dashboard in Power BI Desktop.
-* 📄 **Project Source Code:** View the .pbib [folder](./report/Inventory_management.pbip) to inspect the underlying DAX measures, TMDL model definitions, and report metadata tracked via Git. 
+## 📊 Key Deliverables & Project Artifacts
+
+| Deliverable | Description | Link |
+| :--- | :--- | :---: |
+| 🌐 **Interactive Dashboard** | View and interact with the live report in Power BI Service | [Launch Report ↗](https://app.fabric.microsoft.com/view?r=eyJrIjoiMDg4YmUzZTYtYjEzMy00MTcxLWFiYmMtOTk0OGU1MzU5MmNmIiwidCI6ImU0YmQ2OWZmLWU2ZjctNGMyZS1iMjQ3LTQxYjU0YmEyNDkwZSIsImMiOjh9) |
+| 📂 **Developer Source Code** | Explore `.pbip` metadata, TMDL model definitions, and DAX logic | [View Code Folder ↗](./report/) |
 
 ![Dashboard Preview](./assets/dashboard-demo.gif)
 
@@ -37,12 +40,10 @@ A more detailed analysis of the DAX formulas, the dashboard purposes and the der
 <br>
 
 ## 📋 Project Details
-<br>
-<br>
 <ins>Semantic model</ins>
 <br>
 <br>
-The model consists of a simple star schema where product and time dimension refer to the inventory transaction table through their respective foreign keys.
+The model consists of a simple star schema where product and time dimensions refer to the inventory transaction table through their respective foreign keys.
 Two hierarchies have been created, one in the product category and one drilling down from year to quarter and month.
 <br>
 <br>
@@ -54,53 +55,78 @@ Two hierarchies have been created, one in the product category and one drilling 
 <br>
 <br>
 In this section I summarize the most complex and relevant DAX formulas that I created for this project, explaining what the purpose of each one is.
-
-**% SKUs below ROP**
+<br>
+<br>
+*% SKUs below ROP*
+<br>
+<br>
 <img width="881" height="231" alt="image" src="https://github.com/user-attachments/assets/b220a7cd-eccd-458b-a9c0-3e8151621a5d" />
-
-For each row in the Product Master List, i.e. each distinct item, the formula evaluates with 1 if the stock level is below reorder point, with 0 if not, then divides by the total products in the master list to have the % of product types that need reorder.
-
-**Cumulative %**
-
+<br>
+<br>
+For each row in the Product Master List, i.e. each distinct item, the formula returns 1 if the stock level is below reorder point, 0 if not, then divides by the total products in the master list to have the % of product types that need reorder.
+<br>
+<br>
+*Cumulative %*
+<br>
+<br>
 <img width="573" height="455" alt="image" src="https://github.com/user-attachments/assets/e9232643-d301-406a-a770-0988956fb9a3" />
-
-This measure is used to create the cumulative % of each item type for the Pareto Chart. First I need to set up the cumulative revenue value (CumulativeRevenue) as the total revenue of the considered item, but adding up the revenue from all other items which have a higher revenue than this one! Afterwards, the obtained value is divided by the total revenue of all the items together (TotalAllRevenue). This way, for the higher revenue item, no other revenue will be added, while for the lowest revenue item, all other revenue values will be summed, so the cumulative value will equal the total revenue and the result will be 100%, as expected.
-
-**Daily Burn Rate**
-
+<br>
+<br>
+This measure is used to create the cumulative % of each item type for the Pareto Chart. First I need to set up the cumulative revenue value (CumulativeRevenue) as the total revenue of the considered item, but adding up the revenue from all other items which have a higher revenue than this one! Afterwards, the obtained value is divided by the total revenue of all the items together (TotalAllRevenue). This way, for the higher revenue item, no other revenue will be added, while for the lowest revenue item, all other revenue values will be summed, so the cumulative value will equal the total revenue and the result will be 100%, as expected. This is also the basis from which each product is assigned to an ABC category, based on cumulative revenue.
+<br>
+<br>
+*Daily Burn Rate*
+<br>
+<br>
 <img width="637" height="182" alt="image" src="https://github.com/user-attachments/assets/feac7510-1743-4702-b985-20da45e63a90" />
-
+<br>
+<br>
 If I calculated the burn rate using day-to-day values, the chart would be fluctuating in a way that it would not be readable and usable. By smoothing the curve taking account the dynamic burn rate, changing every day, but over the past 30 days of each day, the curve is meaningful and more interpretable, giving us an idea of whether stock is increasing or decreasing in any time range. To calculate this, we average the daily sum of sold quantities in the past 30 days in each date of the year, and set this average as value for that specific day. Each consecutive day will have a slightly different value, because the value of the oldest day was replaced by the value of the new day.
-
-**MoM Qty Change %**
-
+<br>
+<br>
+*MoM Qty Change %*
+<br>
+<br>
 <img width="985" height="117" alt="image" src="https://github.com/user-attachments/assets/b4261dc7-bcd2-439b-b91c-511f40bcaead" />
-
+<br>
+<br>
 A classic dynamic measure comparing each month with the respective previous one, and summarizing totals as % variation over the previous month. The use of variables allows to simplify the readability of the final formula.
-
-**Required Stock**
-
+<br>
+<br>
+*Required Stock*
+<br>
+<br>
 <img width="882" height="117" alt="image" src="https://github.com/user-attachments/assets/2db3e6e2-1da5-4484-ac0f-c78c249b16c3" />
-
-The formula compares the stock level for a particular product with its corresponding reorder point. When the condition is met, i.e. stock is lower than reorder point, it returns the stock balance value in positive value, as number of units that are missing. When the condition is not met, it stays blank. This way the reorder trigger table is filled with only those categories that need stock replenishment. The same formula is used in a separate measure replacing the value of the products instead of the quantity, to obtain the total cost of the required order.
-
-**Simulated Retail Revenue**
-
+<br>
+<br>
+The formula compares the stock level for a particular product with its corresponding reorder point. When the condition is met, i.e. stock is lower than reorder point, it returns the stock balance value in positive value, representing the number of units that are missing. When the condition is not met, it stays blank. This way the reorder trigger table is filled with only those categories that need stock replenishment. The same formula is used in a separate measure replacing the value of the products instead of the quantity, to obtain the total cost of the required order.
+<br>
+<br>
+*Simulated Retail Revenue*
+<br>
+<br>
 <img width="656" height="317" alt="image" src="https://github.com/user-attachments/assets/49c9504a-a50c-485e-8680-c71a6d303582" />
-
-After selecting the numeric values in the parameters for markups in the Price Simulation section, this is the formula that summarizes every input and produces the simulated revenue that would be produced with such price settings. First of all, the base markup is defined as the selected option in the base markup for surgical items, the selected option in the frames items base markup, and a fix 1.25 markup for the other categories, i.e. contact lenses and solutions. The SWITCH function allows to evaluate each product by Category in sequential order, and if it does not belong to the first listed category (surgical) nor the second (frames), it keeps the residual markup of 1.25. After the BaseMarkup variable, another variable is set to get the input of the Price Markup % parameter. Finally, the revenue is calculated as revenue at cost multiplied by the sum of the two levels of markup, the base one which is category-specific, and the general one called Price Markup %.
-
+<br>
+<br>
+After selecting the numeric values in the parameters for markups in the Price Simulation section, this is the formula that summarizes every input and produces the simulated revenue that would be produced with such price settings. First of all, the base markup changes depending on the categories. For surgical and frames, it is selected by the user in the numeric parameter, whereas for contact lenses and solutions it is a fix 1.25 value. The SWITCH function allows to evaluate each product by Category in sequential order, and if it does not belong to the first listed category (surgical) nor the second (frames), it keeps the residual markup of 1.25. After the BaseMarkup variable, another variable is set to get the input of the Price Markup % parameter, which is generic and not category-specific. Finally, the simulated retail revenue is calculated as revenue at cost multiplied by the sum of the two levels of markup, the base one which is category-specific, and the general one called Price Markup %.
+<br>
+<br>
 **SKU Stock Status Message**
-
+<br>
+<br>
 <img width="811" height="496" alt="image" src="https://github.com/user-attachments/assets/fd94ba99-853d-4d33-a67d-b7049bbb4773" />
-
-The formula is used to label each product stock as "Overstocked", "Healthy Stock" or "Reorder Needed". The formula compares the stock with the reorder point and produces the three different outcomes with a SWITCH formula that sequentially defines the possible outcomes of the condition. If the stock is equal or below reorder point, a new purchase order is needed. If stock is more than twice the reorder point, the product is considered to be overstocked. In any other scenario, i.e. stock above reorder point but less than twice, the stock level is healthy.
-
+<br>
+<br>
+The formula is used to label each product stock as "Overstocked", "Healthy Stock" or "Reorder Needed". The formula compares the stock with the reorder point and produces three different outcomes with a SWITCH formula that sequentially evaluates the condition. If stock is equal or below reorder point, a new purchase order is needed. If stock is more than twice the reorder point, the product is considered to be overstocked. In any other scenario, i.e. stock above reorder point but less than twice, the stock level is healthy.
+<br>
+<br>
 **Top Revenue SKU Info**
-
+<br>
+<br>
 <img width="611" height="201" alt="image" src="https://github.com/user-attachments/assets/b297e9be-e7b5-4a97-8014-6520bf5f3c32" />
-
-A simple concatenation of different values to be displayed in a card. In sequence, the card will take the top ranked item in the Product Master List, by revenue, and will display the SKU code and total revenue produced by this item.
+<br>
+<br>
+A simple concatenation of two different values to be displayed in a card. In sequence, the card will take the top ranked item in the Product Master List, by revenue, and will display the SKU code and total revenue produced by this item.
 <br>
 <br>
 <br>
@@ -113,7 +139,7 @@ Here is a description of each dashboard:
 <br>
 <br>
 
-**1. Overview on Stock Health**: this executive summary displays the main KPIs at the top, followed by the status of each individual item in stock, in red if stock is sufficient and red if it needs replenishment. There is also a label for those items that are overstocked. Additional graphs also illustrate the situation in terms of broad item category and detailed item description.
+**1. Overview on Stock Health**: this executive summary displays the main KPIs at the top, followed by the status of each individual item in stock, in green if stock is sufficient and red if it needs replenishment. There is also a label for those items that are overstocked. Additional graphs also illustrate the situation in terms of broad item category and detailed item description.
 <br>
 <br>
 <img width="1421" height="797" alt="s01" src="https://github.com/user-attachments/assets/5a66e8a6-a10a-41f0-8885-192560923368" />
@@ -171,14 +197,14 @@ On the basis of my knowledge of the market and the company, I list some insights
 
 **INSIGHT #2** 
 <br>
-- *OBSERVATION*: the good news is on the trend over the year. There does not seem to be a particularly pronounced seasonal trend for any product, but only fluctuations due to specific orders. The same goes for variation across staff and location. This is a good news because it makes supply chain needs more predictable than other markets, and justify lower reorder point values in general.
+- *OBSERVATION*: the good news is on the trend over the year. There does not seem to be a particularly pronounced seasonal trend for any product, but only fluctuations due to specific orders. The same goes for variation across staff and location. This is positive because it makes supply chain needs more predictable than other markets, and justifies lower reorder point values in general.
 - *ACTION:* if we could add data from previous years than 2025 as well, this could reinforce our analysis and confirm whether trends were very predictable over the previous years as well.
 <br>
 
 **INSIGHT #3** 
 <br>
 - *OBSERVATION:* our Pareto Chart shows a clear hierarchy between product categories. Surgical items are clearly the most important ones, followed by frames, with contact lenses and solutions as least important ones. This is an important insight in our value creation process and reflects on the pricing choice; we add more base markup to the most valuable items that are also more complex and harder to gather from alternative suppliers on the market.
-- *ACTION:* a target gross profit of 60% (150% markup) seems reasonable but in this market there might be an opportunity to reach 80% (400% markup) in the higher end.
+- *ACTION:* research for this market suggests that a target gross profit of 60% (150% markup) is reasonable, but likely on the lower end. There is a potential to reach 80% percentage gross profit (400% markup) on the higher end. Whether this is advisable depends largely on two factors: (1) how does the company wants to set the pricing policy, high prices for high quality, aggressive low pricing or intermediate? (2) how is the company placed in terms of purchasing costs? The lower the purchasing cost, compared to competitors, the higher the margin for a larger markup.
 <br>
 <br>
 <br>
