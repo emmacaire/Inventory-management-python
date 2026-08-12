@@ -6,13 +6,6 @@
 [![Source Data CSV](https://img.shields.io/badge/Data_Source-CSV-green?logo=kaggle)](https://github.com/emmacaire/Inventory-management-python/blob/main/source)
 <br>
 
----
-
-### 📌 Quick Links & Resources
-* 📊 **Live Interactive Dashboard:** [Launch Power BI Service Report ↗](YOUR_POWER_BI_LINK_HERE)
-* 📂 **Developer Source Code:** [Browse `.pbip` & TMDL Models ↗](./report/)
-* 📄 **Source Data:** [Dataset Reference Link](YOUR_DATASET_LINK) | [Raw CSV File](./source/PharmaInventory.csv)
-
 ## 📌 Summary
 The analysis focuses on inventory data in a pharma company, offering a wide range of insights on inventory status, re-ordering practices, branch and staff performance, ABC stratification and pricing strategies. However, there are two main limitations of this dataset:
   1. data includes all outbound transactions of ordered material, but lacks inbound transactions, i.e. purchase orders made throughout the year to replenish stock. Basically it only includes what leaves the warehouse (sales) without registering what enters the warehouse (purchasing). For this reason, the analysis on the purchasing side is static, focused on current stock, while for the sales side, it is possible to inspect the trend throughout the considered time period.
