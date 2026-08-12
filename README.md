@@ -26,7 +26,7 @@ A more detailed analysis of the DAX formulas, the dashboard purposes and the der
   - Power BI Desktop (semantic model, star schema, DAX, report),
   - Power Automate (button activating an automated e-mail with an HTML table)
 
-* **Visualization tools:**  KPIs, multi-level cards, bar charts, mixed bar/line charts, decomposition trees, matrixes, slicers, scatter plots, field parameters, navigation buttons, custom tooltips, Power Automate buttons.
+* **Visualization tools:**  KPIs, multi-level cards, bar charts, mixed bar/line charts, decomposition trees, matrixes, slicers, scatter plots, field and numeric parameters, navigation buttons, custom tooltips, Power Automate buttons.
 <br>
 <br>
 <img width="1417" height="795" alt="s02" src="https://github.com/user-attachments/assets/86c5ac8e-c4e1-4654-83e0-5e0631777a8a" />
@@ -53,7 +53,54 @@ Two hierarchies have been created, one in the product category and one drilling 
 <ins>DAX formulas</ins>
 <br>
 <br>
-xxx
+In this section I summarize the most complex and relevant DAX formulas that I created for this project, explaining what the purpose of each one is.
+
+**% SKUs below ROP**
+<img width="881" height="231" alt="image" src="https://github.com/user-attachments/assets/b220a7cd-eccd-458b-a9c0-3e8151621a5d" />
+
+For each row in the Product Master List, i.e. each distinct item, the formula evaluates with 1 if the stock level is below reorder point, with 0 if not, then divides by the total products in the master list to have the % of product types that need reorder.
+
+**Cumulative %**
+
+<img width="573" height="455" alt="image" src="https://github.com/user-attachments/assets/e9232643-d301-406a-a770-0988956fb9a3" />
+
+This measure is used to create the cumulative % of each item type for the Pareto Chart. First I need to set up the cumulative revenue value (CumulativeRevenue) as the total revenue of the considered item, but adding up the revenue from all other items which have a higher revenue than this one! Afterwards, the obtained value is divided by the total revenue of all the items together (TotalAllRevenue). This way, for the higher revenue item, no other revenue will be added, while for the lowest revenue item, all other revenue values will be summed, so the cumulative value will equal the total revenue and the result will be 100%, as expected.
+
+**Daily Burn Rate**
+
+<img width="637" height="182" alt="image" src="https://github.com/user-attachments/assets/feac7510-1743-4702-b985-20da45e63a90" />
+
+If I calculated the burn rate using day-to-day values, the chart would be fluctuating in a way that it would not be readable and usable. By smoothing the curve taking account the dynamic burn rate, changing every day, but over the past 30 days of each day, the curve is meaningful and more interpretable, giving us an idea of whether stock is increasing or decreasing in any time range. To calculate this, we average the daily sum of sold quantities in the past 30 days in each date of the year, and set this average as value for that specific day. Each consecutive day will have a slightly different value, because the value of the oldest day was replaced by the value of the new day.
+
+**MoM Qty Change %**
+
+<img width="985" height="117" alt="image" src="https://github.com/user-attachments/assets/b4261dc7-bcd2-439b-b91c-511f40bcaead" />
+
+A classic dynamic measure comparing each month with the respective previous one, and summarizing totals as % variation over the previous month. The use of variables allows to simplify the readability of the final formula.
+
+**Required Stock**
+
+<img width="882" height="117" alt="image" src="https://github.com/user-attachments/assets/2db3e6e2-1da5-4484-ac0f-c78c249b16c3" />
+
+The formula compares the stock level for a particular product with its corresponding reorder point. When the condition is met, i.e. stock is lower than reorder point, it returns the stock balance value in positive value, as number of units that are missing. When the condition is not met, it stays blank. This way the reorder trigger table is filled with only those categories that need stock replenishment. The same formula is used in a separate measure replacing the value of the products instead of the quantity, to obtain the total cost of the required order.
+
+**Simulated Retail Revenue**
+
+<img width="656" height="317" alt="image" src="https://github.com/user-attachments/assets/49c9504a-a50c-485e-8680-c71a6d303582" />
+
+After selecting the numeric values in the parameters for markups in the Price Simulation section, this is the formula that summarizes every input and produces the simulated revenue that would be produced with such price settings. First of all, the base markup is defined as the selected option in the base markup for surgical items, the selected option in the frames items base markup, and a fix 1.25 markup for the other categories, i.e. contact lenses and solutions. The SWITCH function allows to evaluate each product by Category in sequential order, and if it does not belong to the first listed category (surgical) nor the second (frames), it keeps the residual markup of 1.25. After the BaseMarkup variable, another variable is set to get the input of the Price Markup % parameter. Finally, the revenue is calculated as revenue at cost multiplied by the sum of the two levels of markup, the base one which is category-specific, and the general one called Price Markup %.
+
+**SKU Stock Status Message**
+
+<img width="811" height="496" alt="image" src="https://github.com/user-attachments/assets/fd94ba99-853d-4d33-a67d-b7049bbb4773" />
+
+The formula is used to label each product stock as "Overstocked", "Healthy Stock" or "Reorder Needed". The formula compares the stock with the reorder point and produces the three different outcomes with a SWITCH formula that sequentially defines the possible outcomes of the condition. If the stock is equal or below reorder point, a new purchase order is needed. If stock is more than twice the reorder point, the product is considered to be overstocked. In any other scenario, i.e. stock above reorder point but less than twice, the stock level is healthy.
+
+**Top Revenue SKU Info**
+
+<img width="611" height="201" alt="image" src="https://github.com/user-attachments/assets/b297e9be-e7b5-4a97-8014-6520bf5f3c32" />
+
+A simple concatenation of different values to be displayed in a card. In sequence, the card will take the top ranked item in the Product Master List, by revenue, and will display the SKU code and total revenue produced by this item.
 <br>
 <br>
 <br>
@@ -113,31 +160,25 @@ Here is a description of each dashboard:
 <br>
 <br>
 After viewing the report, the users should take their own conclusions based on their business knowledge. 
-On the basis of my limited knowledge of the market and the company, I list some insights - as a combination of observation and suggested action - that should be prescribed in order to improve  business strategy:
+On the basis of my knowledge of the market and the company, I list some insights - as a combination of observation and suggested action - that should be prescribed in order to improve  business strategy:
 <br>
 <br>
 **INSIGHT #1**
 <br>
-- *OBSERVATION:* there is an urgent need to address the high amount of lost customers during 2025 (30%!), which is not compensated at all by the number of new customers. Competitors seem to be performing aggressive strategies that convince users to change, more than any other reason.
-- *ACTION:* immediately compare the products with those of competitors and evaluate more effective strategies for customer retention, including discounts and special offers.
+- *OBSERVATION:* there is a pattern of correlation between items with longer lead time and low reorder point. This makes sense in terms of cost optimization but can be dangerous when buffers in delivery can cause the warehouse to run out of stock. This is the case of "Intraocular Lens" and "Phaco Tip", for instance. These two have respectively 2 and 5 days of supply remaining, so unless orders were placed 43 and 25 days ago, the company is likely to run out of stock soon, with current average daily consumption values.
+- *ACTION:* urgently determine whether purchase orders for the most critical components have been placed and if delivery is predicted to be on time. Afterwards, we should determine if and how many times in the past these critical components with long lead time have arrived late leaving the warehouse out of stock. Based on that, reorder points might be re-defined so the right buffer is provided.
 <br>
 
 **INSIGHT #2** 
 <br>
-- *OBSERVATION*: looking at demographics and product comparison, the customer with higher likelihood to churn is more price sensitive (paperless billing, shorter tenure average, higher average charge) and with more time to compare offers (older age, no dependencies). The predominance of bank withdrawal as payment method among churning customers confirms a higher age, as credit cards are more used among younger people. Churning customers also have less premium support but more unlimited data contracts. Offer E seems to be the only one that is still active.
-- *ACTION:* An accurate clustering of the different customers might help identify which categories are more fragile and prone to churning. The difference in terms of unlimited data and premium support between staying and churning customers should also be investigated, they might simply reflect different product policies in the latest years. For instance, unlimited data might have been included as standard plan in the latest years and could explain why churning customers, who have on average a shorter past tenure in months, have more unlimited data plans than those who stayed, who have also been customers for longer time and with older offers. This would also explain why Offer E is so unpopular among churning customers, yet it is the only available offer for new customers. At first glance, it seems as a substantial amount of customers might prefer offers with less features but more competitive in terms of pricing.
+- *OBSERVATION*: the good news is on the trend over the year. There does not seem to be a particularly pronounced seasonal trend for any product, but only fluctuations due to specific orders. The same goes for variation across staff and location. This is a good news because it makes supply chain needs more predictable than other markets, and justify lower reorder point values in general.
+- *ACTION:* if we could add data from previous years than 2025 as well, this could reinforce our analysis and confirm whether trends were very predictable over the previous years as well.
 <br>
 
 **INSIGHT #3** 
 <br>
-- *OBSERVATION:* there are relevant differences in geographical areas. San Diego area is causing massive churn due to high charges. Fresno should be taken as a model for being able to hold relatively high charges and longer tenure in months.
-- *ACTION:* analyze the situation in these different markets and understand if there are specific barriers that prevent the benchmark areas to be replicated in the most problematic areas, especially San Diego. For example, competition might be less fierce in Fresno compared to San Diego, which would explain why the company is doing better there.
-<br>
-
-**INSIGHT #4**
-<br>
-- *OBSERVATION:* there are limited variations in terms of time of the year. There does not seem to be a particularly vulnerable period of the year where churn increases, however patterns are slightly different across towns, for instance in San Francisco and Fresno churn seems to be more likely in the latest two quarters, while in Oakland it mostly happens in Q1 and Q2. 
-- *ACTION:* the company should focus on an all-year-round strategy rather than specific ones in certain key periods. Customers seem to churn at any time with no particular peaks of dissatisfaction. (note: dates were generated artificially and randomly for this project's purpose, as explained in phase 2 !).
+- *OBSERVATION:* our Pareto Chart shows a clear hierarchy between product categories. Surgical items are clearly the most important ones, followed by frames, with contact lenses and solutions as least important ones. This is an important insight in our value creation process and reflects on the pricing choice; we add more base markup to the most valuable items that are also more complex and harder to gather from alternative suppliers on the market.
+- *ACTION:* a target gross profit of 60% (150% markup) seems reasonable but in this market there might be an opportunity to reach 80% (400% markup) in the higher end.
 <br>
 <br>
 <br>
