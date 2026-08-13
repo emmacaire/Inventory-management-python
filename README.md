@@ -3,7 +3,7 @@
 
 [![Live Report](https://img.shields.io/badge/Power_BI-Live_Dashboard-F2C94C?logo=powerbi&logoColor=black)](https://app.fabric.microsoft.com/view?r=eyJrIjoiMDg4YmUzZTYtYjEzMy00MTcxLWFiYmMtOTk0OGU1MzU5MmNmIiwidCI6ImU0YmQ2OWZmLWU2ZjctNGMyZS1iMjQ3LTQxYjU0YmEyNDkwZSIsImMiOjh9)
 [![Source Data](https://img.shields.io/badge/Data_Source-Kaggle-blue?logo=kaggle)](https://www.kaggle.com/datasets/nevinfritsch/medical-supply-chain-and-inventory-risk-analysis)
-[![Source Data CSV](https://img.shields.io/badge/Data_Source-CSV-green?logo=kaggle)](https://github.com/emmacaire/Inventory-management-python/blob/main/source)
+[![Source Data CSV](https://img.shields.io/badge/Data_Source-CSV-green?)](https://github.com/emmacaire/Inventory-management-python/blob/main/source)
 <br>
 
 ## 📌 Summary
