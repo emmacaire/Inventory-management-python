@@ -1,5 +1,5 @@
 # Pharmaceutical Inventory & Supply Chain Analytics
-> **A practical Power BI Desktop solution designed to optimize stock levels, prevent expiry write-offs using FEFO logic, and eliminate critical drug stockouts.**
+> **A practical Power BI Desktop solution designed to monitor stock levels, support the purchasing process and define the pricing strategy.**
 
 [![Live Report](https://img.shields.io/badge/Power_BI-Live_Dashboard-F2C94C?logo=powerbi&logoColor=black)](https://app.fabric.microsoft.com/view?r=eyJrIjoiMDg4YmUzZTYtYjEzMy00MTcxLWFiYmMtOTk0OGU1MzU5MmNmIiwidCI6ImU0YmQ2OWZmLWU2ZjctNGMyZS1iMjQ3LTQxYjU0YmEyNDkwZSIsImMiOjh9)
 [![Source Data](https://img.shields.io/badge/Data_Source-Kaggle-blue?logo=kaggle)](https://www.kaggle.com/datasets/nevinfritsch/medical-supply-chain-and-inventory-risk-analysis)
@@ -43,9 +43,10 @@ A more detailed analysis of the DAX formulas, the dashboard purposes and the der
 <br>
 
 ## 📋 Project Details
-<ins>Semantic model</ins>
+
+### Semantic model
 <br>
-<br>
+
 The model consists of a simple star schema where product and time dimensions refer to the inventory transaction table through their respective foreign keys.
 Two hierarchies have been created, one in the product category and one drilling down from year to quarter and month.
 <br>
@@ -53,10 +54,10 @@ Two hierarchies have been created, one in the product category and one drilling 
 <img width="1175" height="708" alt="Screenshot 2026-08-11 170854" src="https://github.com/user-attachments/assets/1f674f8e-bd7d-42dd-a113-175e8b696ffa" />
 <br>
 <br>
+
+### DAX formulas
 <br>
-<ins>DAX formulas</ins>
-<br>
-<br>
+
 In this section I summarize the most complex and relevant DAX formulas that I created for this project, explaining what the purpose of each one is.
 <br>
 <br>
@@ -114,7 +115,7 @@ The formula compares the stock level for a particular product with its correspon
 After selecting the numeric values in the parameters for markups in the Price Simulation section, this is the formula that summarizes every input and produces the simulated revenue that would be produced with such price settings. First of all, the base markup changes depending on the categories. For surgical and frames, it is selected by the user in the numeric parameter, whereas for contact lenses and solutions it is a fix 1.25 value. The SWITCH function allows to evaluate each product by Category in sequential order, and if it does not belong to the first listed category (surgical) nor the second (frames), it keeps the residual markup of 1.25. After the BaseMarkup variable, another variable is set to get the input of the Price Markup % parameter, which is generic and not category-specific. Finally, the simulated retail revenue is calculated as revenue at cost multiplied by the sum of the two levels of markup, the base one which is category-specific, and the general one called Price Markup %.
 <br>
 <br>
-**SKU Stock Status Message**
+*SKU Stock Status Message*
 <br>
 <br>
 <img width="811" height="496" alt="image" src="https://github.com/user-attachments/assets/fd94ba99-853d-4d33-a67d-b7049bbb4773" />
@@ -123,7 +124,7 @@ After selecting the numeric values in the parameters for markups in the Price Si
 The formula is used to label each product stock as "Overstocked", "Healthy Stock" or "Reorder Needed". The formula compares the stock with the reorder point and produces three different outcomes with a SWITCH formula that sequentially evaluates the condition. If stock is equal or below reorder point, a new purchase order is needed. If stock is more than twice the reorder point, the product is considered to be overstocked. In any other scenario, i.e. stock above reorder point but less than twice, the stock level is healthy.
 <br>
 <br>
-**Top Revenue SKU Info**
+*Top Revenue SKU Info*
 <br>
 <br>
 <img width="611" height="201" alt="image" src="https://github.com/user-attachments/assets/b297e9be-e7b5-4a97-8014-6520bf5f3c32" />
@@ -132,10 +133,10 @@ The formula is used to label each product stock as "Overstocked", "Healthy Stock
 A simple concatenation of two different values to be displayed in a card. In sequence, the card will take the top ranked item in the Product Master List, by revenue, and will display the SKU code and total revenue produced by this item.
 <br>
 <br>
+
+### Dashboards
 <br>
-<ins>Dashboards</ins>
-<br>
-<br>
+
 The report consists of 7 dashboards. Buttons on the left allow to easily switch dashboard while consulting the report.
 <br>
 Here is a description of each dashboard:
@@ -184,30 +185,39 @@ Here is a description of each dashboard:
 <img width="1417" height="797" alt="s07" src="https://github.com/user-attachments/assets/a29c7822-7339-41ea-9e86-2c3e6b301cc0" />
 <br>
 <br>
+
+### Summarizing prescriptive actions
 <br>
-<ins>Summarizing prescriptive actions</ins>
-<br>
-<br>
+
 After viewing the report, the users should take their own conclusions based on their business knowledge. 
 On the basis of my knowledge of the market and the company, I list some insights - as a combination of observation and suggested action - that should be prescribed in order to improve  business strategy:
 <br>
 <br>
 **INSIGHT #1**
 <br>
-- *OBSERVATION:* there is a pattern of correlation between items with longer lead time and low reorder point. This makes sense in terms of cost optimization but can be dangerous when buffers in delivery can cause the warehouse to run out of stock. This is the case of "Intraocular Lens" and "Phaco Tip", for instance. These two have respectively 2 and 5 days of supply remaining, so unless orders were placed 43 and 25 days ago, the company is likely to run out of stock soon, with current average daily consumption values.
-- *ACTION:* urgently determine whether purchase orders for the most critical components have been placed and if delivery is predicted to be on time. Afterwards, we should determine if and how many times in the past these critical components with long lead time have arrived late leaving the warehouse out of stock. Based on that, reorder points might be re-defined so the right buffer is provided.
+
+OBSERVATION: 
+> there is a pattern of correlation between items with longer lead time and low reorder point. This makes sense in terms of cost optimization but can be dangerous when buffers in delivery cause the warehouse to run out of stock. This is the case of "Intraocular Lens" and "Phaco Tip", for instance. These two have respectively 2 and 5 days of supply remaining, so unless orders were placed 43 and 25 days ago, the company is likely to run out of stock soon, with current average daily consumption values.
+
+ACTION: 
+> urgently determine whether purchase orders for the most critical components have been placed and if delivery is predicted to be on time. Afterwards, determine if and how many times in the past these critical components with long lead time have arrived late leaving the warehouse out of stock. Based on that, reorder points might be re-defined so the right buffer is provided.
 <br>
 
 **INSIGHT #2** 
 <br>
-- *OBSERVATION*: the good news is on the trend over the year. There does not seem to be a particularly pronounced seasonal trend for any product, but only fluctuations due to specific orders. The same goes for variation across staff and location. This is positive because it makes supply chain needs more predictable than other markets, and justifies lower reorder point values in general.
-- *ACTION:* if we could add data from previous years than 2025 as well, this could reinforce our analysis and confirm whether trends were very predictable over the previous years as well.
+
+OBSERVATION: 
+> there are good news on the trend over the year. There does not seem to be a particularly pronounced seasonal trend for any product, but only fluctuations due to specific orders. The same goes for variation across staff and location. This is positive because it makes supply chain needs more predictable than other markets, and justifies lower reorder point values in general.
+
+ACTION: 
+> if we could add data from previous years than 2025 as well, this could reinforce our analysis and confirm whether trends were very predictable over the previous years as well.
 <br>
 
 **INSIGHT #3** 
 <br>
-- *OBSERVATION:* our Pareto Chart shows a clear hierarchy between product categories. Surgical items are clearly the most important ones, followed by frames, with contact lenses and solutions as least important ones. This is an important insight in our value creation process and reflects on the pricing choice; we add more base markup to the most valuable items that are also more complex and harder to gather from alternative suppliers on the market.
-- *ACTION:* research for this market suggests that a target gross profit of 60% (150% markup) is reasonable, but likely on the lower end. There is a potential to reach 80% percentage gross profit (400% markup) on the higher end. Whether this is advisable depends largely on two factors: (1) how does the company wants to set the pricing policy, high prices for high quality, aggressive low pricing or intermediate? (2) how is the company placed in terms of purchasing costs? The lower the purchasing cost, compared to competitors, the higher the margin for a larger markup.
-<br>
-<br>
-<br>
+
+OBSERVATION: 
+> our Pareto Chart shows a clear hierarchy between product categories. Surgical items are the most important ones, followed by frames, with contact lenses and solutions as least important ones. This is an important insight in our value creation process and reflects on the pricing choice; we add more base markup to the most valuable items that are also more complex and harder to gather from alternative suppliers on the market.
+
+ACTION: 
+> research for this market suggests that a target gross profit of 60% (150% markup) is reasonable, but likely on the lower end. There is a potential to reach 80% percentage gross profit (400% markup) on the higher end. Whether this is advisable depends largely on two factors: (1) how does the company wants to set the pricing policy, high prices for high quality, aggressive low pricing or intermediate? (2) how is the company placed in terms of purchasing costs? The lower the purchasing cost, compared to competitors, the higher the margin for a larger markup.
