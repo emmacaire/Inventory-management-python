@@ -82,10 +82,10 @@ This measure is used to create the cumulative % of each item type for the Pareto
 *Daily Burn Rate*
 <br>
 <br>
-<img width="637" height="182" alt="image" src="https://github.com/user-attachments/assets/feac7510-1743-4702-b985-20da45e63a90" />
+<img width="655" height="161" alt="image" src="https://github.com/user-attachments/assets/7240a5c7-53b3-4d07-9891-421cdc56a15e" />
 <br>
 <br>
-If I calculated the burn rate using day-to-day values, the chart would be fluctuating in a way that it would not be readable and usable. By smoothing the curve taking account the dynamic burn rate, changing every day, but over the past 30 days of each day, the curve is meaningful and more interpretable, giving us an idea of whether stock is increasing or decreasing in any time range. To calculate this, we average the daily sum of sold quantities in the past 30 days in each date of the year, and set this average as value for that specific day. Each consecutive day will have a slightly different value, because the value of the oldest day was replaced by the value of the new day.
+If I calculated the burn rate using day-to-day values, the chart would be fluctuating in a way that it would not be readable and usable. By smoothing the curve taking account the dynamic burn rate, changing every day, but over the past 30 days of each day, the curve is meaningful and more interpretable, giving us an idea of whether stock is increasing or decreasing in any time range. To calculate this, we average the daily sum of sold quantities in the past 30 days in each date of the year, and set this average as value for that specific day. Each consecutive day will have a slightly different value, because the value of the oldest day was replaced by the value of the new day. The use of COALESCE ensures that those days where no item has been sold get treated as zero instead of blank, preserving the right count of days in the denominator.
 <br>
 <br>
 *MoM Qty Change %*
