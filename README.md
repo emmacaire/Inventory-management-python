@@ -1,5 +1,5 @@
 # Pharmaceutical Inventory & Supply Chain Analytics
-> **A practical Power BI Desktop solution designed to monitor stock levels, support the purchasing process and define the pricing strategy.**
+> **A practical Power BI Desktop solution designed to monitor stock levels, support the purchasing process and define the pricing strategy, utilizing advanced DAX functions (dynamic safety stock calculators, ABC inventory classification, and reorder point time-intelligence forecasts).**
 
 [![Live Report](https://img.shields.io/badge/Power_BI-Live_Dashboard-F2C94C?logo=powerbi&logoColor=black)](https://app.fabric.microsoft.com/view?r=eyJrIjoiMDg4YmUzZTYtYjEzMy00MTcxLWFiYmMtOTk0OGU1MzU5MmNmIiwidCI6ImU0YmQ2OWZmLWU2ZjctNGMyZS1iMjQ3LTQxYjU0YmEyNDkwZSIsImMiOjh9)
 [![Source Data](https://img.shields.io/badge/Data_Source-Kaggle-blue?logo=kaggle)](https://www.kaggle.com/datasets/nevinfritsch/medical-supply-chain-and-inventory-risk-analysis)
@@ -14,6 +14,7 @@ The analysis focuses on inventory data in a pharma company, offering a wide rang
 The analysis is conducted entirely on Power BI Desktop, with extensive use of Power Query for the ETL part and a simple relational model with one fact table and two dimension tables (product master list and date) in the semantic model. The main focus in this project is on the creation of complex DAX formulas supporting inventory management.
 The final output is a Power BI report consisting of 7 connected dashboards, including a Power Automate button to notify the required stock replenishment.
 
+The analysis reveals that some items have a critical combination of long lead time and low reorder point, which could easily leave the company out of stock. On the other hand, demand is stable across season, locations and staff which leads to an easier and safer forecasting, and the pricing strategy shows potential to increase prices, if certain conditions are met.
 A more detailed analysis of the DAX formulas, the dashboard purposes and the derived insights is available below.
 <br>
 <br>
