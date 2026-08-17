@@ -25,7 +25,7 @@ First of all, there appear to be two main limitations of this dataset:
 The analysis is conducted entirely on Power BI Desktop, with extensive use of Power Query for the ETL part and a simple relational model with one fact table and two dimension tables (product master list and date) in the semantic model. The main focus in this project is on the creation of complex DAX formulas supporting inventory management.
 The final output is a Power BI report consisting of 7 connected dashboards, including a Power Automate button to notify the required stock replenishment.
 
-As a result, there seem to be one critical evidence and two positive aspects in the inventory process. Some items have a potentially dangerous combination of long lead time and low reorder point, which could easily leave the company out of stock. On the other hand, demand is stable across season, locations and staff which leads to an easier and safer forecasting, and the pricing strategy shows an opportunity to increase prices, if certain conditions are met.
+As a result, there seem to be one critical evidence and two positive aspects in the inventory process. Some items (surgical products) have a potentially dangerous combination of long lead time and low reorder point, which could easily leave the company out of stock. On the other hand, demand is stable across season, locations and staff which leads to an easier and safer forecasting, and the pricing strategy shows an opportunity to increase gross profits from 60% over 80%, if certain conditions are met.
 A more detailed analysis of the DAX formulas, the dashboard purposes and the derived insights is available below.
 <br>
 <br>
