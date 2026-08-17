@@ -7,14 +7,25 @@
 <br>
 
 ## 📌 Summary
-The analysis focuses on inventory data in a pharma company, offering a wide range of insights on inventory status, re-ordering practices, branch and staff performance, ABC stratification and pricing strategies. However, there are two main limitations of this dataset:
+
+A pharma company is currently managing inventory in Excel and wants to test the potential of Power BI Desktop in the following areas:
+  1. providing executives with an overview of the inventory status in one dashboard,
+  2. constant monitoring of which stock needs to be replenished and facilitating the communication with the purchasing department,
+  3. performing ABC stratification to understand the priorities among products,
+  4. analyzing the price setting policies by looking at different scenarios,
+  5. in-depth monitoring of stock across different dimensions such as time, locations and people.
+
+This project answers these business questions with an interactive dashboard offering a wide range of insights on inventory status, re-ordering practices, branch and staff performance, ABC stratification and pricing strategies. It also gathers a few crucial insights on what should be improved based on the analysis.
+<br>
+
+First of all, there appear to be two main limitations of this dataset:
   1. data includes all outbound transactions of ordered material, but lacks inbound transactions, i.e. purchase orders made throughout the year to replenish stock. Basically it only includes what leaves the warehouse (sales) without registering what enters the warehouse (purchasing). For this reason, the analysis on the purchasing side is static, focused on current stock, while for the sales side, it is possible to inspect the trend throughout the considered time period.
   2.  there is no indication of the unit price for each item, only the unit cost. This means that most of the analysis is focusing on revenue at cost of purchasing, while revenue on selling price is only studied as a simulation, analyzing the possible outcomes of different price markups.
 
 The analysis is conducted entirely on Power BI Desktop, with extensive use of Power Query for the ETL part and a simple relational model with one fact table and two dimension tables (product master list and date) in the semantic model. The main focus in this project is on the creation of complex DAX formulas supporting inventory management.
 The final output is a Power BI report consisting of 7 connected dashboards, including a Power Automate button to notify the required stock replenishment.
 
-The analysis reveals that some items have a critical combination of long lead time and low reorder point, which could easily leave the company out of stock. On the other hand, demand is stable across season, locations and staff which leads to an easier and safer forecasting, and the pricing strategy shows potential to increase prices, if certain conditions are met.
+As a result, there seem to be one critical evidence and two positive aspects in the inventory process. Some items have a potentially dangerous combination of long lead time and low reorder point, which could easily leave the company out of stock. On the other hand, demand is stable across season, locations and staff which leads to an easier and safer forecasting, and the pricing strategy shows an opportunity to increase prices, if certain conditions are met.
 A more detailed analysis of the DAX formulas, the dashboard purposes and the derived insights is available below.
 <br>
 <br>
